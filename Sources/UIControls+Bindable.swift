@@ -82,10 +82,10 @@ public class BindableTextView: UITextView, Bindable, UITextViewDelegate {
         }
     }
     
-    public func bind(with observable: Observable<String>) {
+    public func bind(with observable: Observable<String>) -> BindingReceipt {
         self.delegate = self
         self.register(for: observable)
-        self.observe(for: observable) { [weak self] (value) in
+        return self.observe(for: observable) { [weak self] (value) in
             self?.updateValue(with: value)
         }
     }

@@ -12,7 +12,7 @@ public protocol Bindable: NSObjectProtocol {
     associatedtype BindingType: Equatable
     func observingValue() -> BindingType?
     func updateValue(with value: BindingType)
-    func bind(with observable: Observable<BindingType>)
+    func bind(with observable: Observable<BindingType>) -> BindingReceipt
 }
 
 fileprivate struct AssociatedKeys {
@@ -53,7 +53,7 @@ extension Bindable where Self: NSObject {
         }
     }
 
-    public func bind(with observable: Observable<BindingType>) {
+    public func bind(with observable: Observable<BindingType>) -> BindingReceipt {
         if let _self = self as? UIControl {
             _self.addTarget(Selector, action: Selector{ [weak self] in self?.valueChanged() }, for: [.editingChanged, .valueChanged])
         }
@@ -61,7 +61,7 @@ extension Bindable where Self: NSObject {
         if let val = observable.value {
             self.updateValue(with: val)
         }
-        self.observe(for: observable) { (value) in
+        return self.observe(for: observable) { (value) in
             self.updateValue(with: value)
         }
     }
