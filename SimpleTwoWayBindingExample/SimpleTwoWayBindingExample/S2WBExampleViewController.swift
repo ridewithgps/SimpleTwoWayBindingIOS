@@ -6,21 +6,7 @@
 //  Copyright © 2020 Ryan Forsythe. All rights reserved.
 //
 
-import SimpleTwoWayBinding
 import UIKit
-
-struct S2WBExampleViewModel {
-    let turnOn: Observable<Bool> = Observable()
-    let turnOnDescription: Observable<String>
-    
-    init() {
-        turnOnDescription = turnOn
-            .map { on -> String in
-                if on { return "The switch is on" }
-                else { return "The switch is off" }
-            }
-    }
-}
 
 class S2WBExampleViewController: UITableViewController {
     let viewModel = S2WBExampleViewModel()
@@ -38,28 +24,45 @@ class S2WBExampleViewController: UITableViewController {
     
     enum Cells: CaseIterable {
         case `switch`
+        case textField
+        case slider
+        case stepper
+        case segment
         
         var associatedClass: AnyClass {
             switch self {
             case .switch: return SwitchCell.self
+            case .textField: return TextFieldCell.self
+            case .slider: return SliderCell.self
+            case .stepper: return StepperCell.self
+            case .segment: return SegmentedControlCell.self
             }
         }
         
         var reuseIdentifier: String {
             switch self {
             case .switch: return SwitchCell.reuseIdentifier
+            case .textField: return TextFieldCell.reuseIdentifier
+            case .slider: return SliderCell.reuseIdentifier
+            case .stepper: return StepperCell.reuseIdentifier
+            case .segment: return SegmentedControlCell.reuseIdentifier
             }
         }
         
         var height: CGFloat {
             switch self {
             case .switch: return SwitchCell.cellHeight
+            case .textField: return TextFieldCell.cellHeight
+            case .slider: return SliderCell.cellHeight
+            case .stepper: return StepperCell.cellHeight
+            case .segment: return SegmentedControlCell.cellHeight
             }
         }
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: Cells.allCases[indexPath.row].reuseIdentifier, for: indexPath)
+        cell.selectionStyle = .none
         guard let bindable = cell as? ViewModelBindable else {
             return cell
         }
@@ -89,6 +92,14 @@ func hstackOf(_ views: [UIView]) -> UIStackView {
     return s
 }
 
+func vstackOf(_ views: [UIView]) -> UIStackView {
+    let s = UIStackView(arrangedSubviews: views)
+    s.translatesAutoresizingMaskIntoConstraints = false
+    s.axis = .vertical
+    s.alignment = .leading
+    return s
+}
+
 func label(_ s: String, testID: String) -> UILabel {
     let l = UILabel()
     l.translatesAutoresizingMaskIntoConstraints = false
@@ -99,50 +110,11 @@ func label(_ s: String, testID: String) -> UILabel {
     return l
 }
 
-class SwitchCell: UITableViewCell {
-    var viewModel: S2WBExampleViewModel?
-    
-    lazy var aSwitch: UISwitch = {
-        let s = UISwitch()
-        s.translatesAutoresizingMaskIntoConstraints = false
-        s.accessibilityIdentifier = "switch"
-        return s
-    }()
-    
-    lazy var switchLabel: UILabel = {
-        label("This is a switch.", testID: "switchLabel")
-    }()
-    
-    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
-        super.init(style: style, reuseIdentifier: reuseIdentifier)
-        
-        let stack = hstackOf([
-            aSwitch,
-            switchLabel
-        ])
-        contentView.addSubview(stack)
-        
-        NSLayoutConstraint.activate([
-            stack.topAnchor.constraint(equalToSystemSpacingBelow: contentView.topAnchor, multiplier: 1),
-            contentView.rightAnchor.constraint(equalToSystemSpacingAfter: stack.rightAnchor, multiplier: 1),
-            contentView.bottomAnchor.constraint(equalToSystemSpacingBelow: stack.bottomAnchor, multiplier: 1),
-            stack.leftAnchor.constraint(equalToSystemSpacingAfter: contentView.leftAnchor, multiplier: 1)
-        ])
-    }
-    
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-}
-
-extension SwitchCell: CellInformation {
-    static var reuseIdentifier: String { "switchCell" }
-    static var cellHeight: CGFloat { 60 }
-}
-
-extension SwitchCell: ViewModelBindable {
-    func bind(to viewModel: S2WBExampleViewModel) {
-        self.aSwitch.bind(with: viewModel.turnOn)
-        self.switchLabel.bind(with: viewModel.turnOnDescription)
-    }
+func constrain(_ child: UIView, toEdgesOf parent: UIView) {
+    NSLayoutConstraint.activate([
+        child.topAnchor.constraint(equalToSystemSpacingBelow: parent.topAnchor, multiplier: 1),
+        parent.rightAnchor.constraint(equalToSystemSpacingAfter: child.rightAnchor, multiplier: 1),
+        parent.bottomAnchor.constraint(equalToSystemSpacingBelow: child.bottomAnchor, multiplier: 1),
+        child.leftAnchor.constraint(equalToSystemSpacingAfter: parent.leftAnchor, multiplier: 1)
+    ])
 }
