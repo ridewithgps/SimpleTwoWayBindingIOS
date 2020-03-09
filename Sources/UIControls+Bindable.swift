@@ -94,3 +94,9 @@ public class BindableTextView: UITextView, Bindable, UITextViewDelegate {
         self.valueChanged()
     }
 }
+
+extension UILabel: Bindable {
+    public typealias BindingType = String
+    public func observingValue() -> String? { text }
+    public func updateValue(with value: String) { text = value }
+}

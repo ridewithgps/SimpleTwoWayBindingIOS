@@ -10,16 +10,24 @@
 		3B753AEF80CF792BA699CE63 /* Pods_SimpleTwoWayBindingExampleTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5370C553C014CC341CB254FF /* Pods_SimpleTwoWayBindingExampleTests.framework */; };
 		9405A6892410704A00343089 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9405A6882410704A00343089 /* AppDelegate.swift */; };
 		9405A68B2410704A00343089 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9405A68A2410704A00343089 /* SceneDelegate.swift */; };
-		9405A68D2410704A00343089 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9405A68C2410704A00343089 /* ViewController.swift */; };
+		9405A68D2410704A00343089 /* S2WBExampleViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9405A68C2410704A00343089 /* S2WBExampleViewController.swift */; };
 		9405A6902410704A00343089 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9405A68E2410704A00343089 /* Main.storyboard */; };
 		9405A6922410704B00343089 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9405A6912410704B00343089 /* Assets.xcassets */; };
 		9405A6952410704B00343089 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9405A6932410704B00343089 /* LaunchScreen.storyboard */; };
 		9405A6C72411767F00343089 /* SimpleTwoWayBindingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9405A6C62411767F00343089 /* SimpleTwoWayBindingTests.swift */; };
+		9405A6CF24131AFB00343089 /* SimpleTwoWayBindingExampleUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9405A6CE24131AFB00343089 /* SimpleTwoWayBindingExampleUITests.swift */; };
 		B34C5E687779A22F120DA707 /* Pods_SimpleTwoWayBindingExample.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6DA06A37976B0FC4B2988EFF /* Pods_SimpleTwoWayBindingExample.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
 		9405A69C2410704B00343089 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 9405A67D2410704A00343089 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 9405A6842410704A00343089;
+			remoteInfo = SimpleTwoWayBindingExample;
+		};
+		9405A6D124131AFB00343089 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 9405A67D2410704A00343089 /* Project object */;
 			proxyType = 1;
@@ -34,7 +42,7 @@
 		9405A6852410704A00343089 /* SimpleTwoWayBindingExample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SimpleTwoWayBindingExample.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		9405A6882410704A00343089 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		9405A68A2410704A00343089 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
-		9405A68C2410704A00343089 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		9405A68C2410704A00343089 /* S2WBExampleViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = S2WBExampleViewController.swift; sourceTree = "<group>"; };
 		9405A68F2410704A00343089 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		9405A6912410704B00343089 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		9405A6942410704B00343089 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
@@ -42,6 +50,9 @@
 		9405A69B2410704B00343089 /* SimpleTwoWayBindingExampleTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SimpleTwoWayBindingExampleTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		9405A6A12410704B00343089 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		9405A6C62411767F00343089 /* SimpleTwoWayBindingTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = SimpleTwoWayBindingTests.swift; path = ../../Tests/SimpleTwoWayBindingTests.swift; sourceTree = "<group>"; };
+		9405A6CC24131AFB00343089 /* SimpleTwoWayBindingExampleUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SimpleTwoWayBindingExampleUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		9405A6CE24131AFB00343089 /* SimpleTwoWayBindingExampleUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimpleTwoWayBindingExampleUITests.swift; sourceTree = "<group>"; };
+		9405A6D024131AFB00343089 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		AE3BF9977BE89A0B966475A4 /* Pods-SimpleTwoWayBindingExample.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SimpleTwoWayBindingExample.debug.xcconfig"; path = "Target Support Files/Pods-SimpleTwoWayBindingExample/Pods-SimpleTwoWayBindingExample.debug.xcconfig"; sourceTree = "<group>"; };
 		C25964CCFF9D55815AB2858C /* Pods-SimpleTwoWayBindingExampleTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SimpleTwoWayBindingExampleTests.debug.xcconfig"; path = "Target Support Files/Pods-SimpleTwoWayBindingExampleTests/Pods-SimpleTwoWayBindingExampleTests.debug.xcconfig"; sourceTree = "<group>"; };
 		D46B51AE645C880BCA29ADE3 /* Pods-SimpleTwoWayBindingExampleTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SimpleTwoWayBindingExampleTests.release.xcconfig"; path = "Target Support Files/Pods-SimpleTwoWayBindingExampleTests/Pods-SimpleTwoWayBindingExampleTests.release.xcconfig"; sourceTree = "<group>"; };
@@ -65,6 +76,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		9405A6C924131AFB00343089 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -82,6 +100,7 @@
 			children = (
 				9405A6872410704A00343089 /* SimpleTwoWayBindingExample */,
 				9405A69E2410704B00343089 /* SimpleTwoWayBindingExampleTests */,
+				9405A6CD24131AFB00343089 /* SimpleTwoWayBindingExampleUITests */,
 				9405A6862410704A00343089 /* Products */,
 				E115450EE484429C277D9024 /* Pods */,
 				92AC9FE13E3FAE8C6EB2550B /* Frameworks */,
@@ -93,6 +112,7 @@
 			children = (
 				9405A6852410704A00343089 /* SimpleTwoWayBindingExample.app */,
 				9405A69B2410704B00343089 /* SimpleTwoWayBindingExampleTests.xctest */,
+				9405A6CC24131AFB00343089 /* SimpleTwoWayBindingExampleUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -102,7 +122,7 @@
 			children = (
 				9405A6882410704A00343089 /* AppDelegate.swift */,
 				9405A68A2410704A00343089 /* SceneDelegate.swift */,
-				9405A68C2410704A00343089 /* ViewController.swift */,
+				9405A68C2410704A00343089 /* S2WBExampleViewController.swift */,
 				9405A68E2410704A00343089 /* Main.storyboard */,
 				9405A6912410704B00343089 /* Assets.xcassets */,
 				9405A6932410704B00343089 /* LaunchScreen.storyboard */,
@@ -118,6 +138,15 @@
 				9405A6C62411767F00343089 /* SimpleTwoWayBindingTests.swift */,
 			);
 			path = SimpleTwoWayBindingExampleTests;
+			sourceTree = "<group>";
+		};
+		9405A6CD24131AFB00343089 /* SimpleTwoWayBindingExampleUITests */ = {
+			isa = PBXGroup;
+			children = (
+				9405A6CE24131AFB00343089 /* SimpleTwoWayBindingExampleUITests.swift */,
+				9405A6D024131AFB00343089 /* Info.plist */,
+			);
+			path = SimpleTwoWayBindingExampleUITests;
 			sourceTree = "<group>";
 		};
 		E115450EE484429C277D9024 /* Pods */ = {
@@ -172,6 +201,24 @@
 			productReference = 9405A69B2410704B00343089 /* SimpleTwoWayBindingExampleTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
+		9405A6CB24131AFB00343089 /* SimpleTwoWayBindingExampleUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 9405A6D524131AFB00343089 /* Build configuration list for PBXNativeTarget "SimpleTwoWayBindingExampleUITests" */;
+			buildPhases = (
+				9405A6C824131AFB00343089 /* Sources */,
+				9405A6C924131AFB00343089 /* Frameworks */,
+				9405A6CA24131AFB00343089 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				9405A6D224131AFB00343089 /* PBXTargetDependency */,
+			);
+			name = SimpleTwoWayBindingExampleUITests;
+			productName = SimpleTwoWayBindingExampleUITests;
+			productReference = 9405A6CC24131AFB00343089 /* SimpleTwoWayBindingExampleUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -188,6 +235,10 @@
 					9405A69A2410704B00343089 = {
 						CreatedOnToolsVersion = 11.3.1;
 						LastSwiftMigration = 1130;
+						TestTargetID = 9405A6842410704A00343089;
+					};
+					9405A6CB24131AFB00343089 = {
+						CreatedOnToolsVersion = 11.3.1;
 						TestTargetID = 9405A6842410704A00343089;
 					};
 				};
@@ -207,6 +258,7 @@
 			targets = (
 				9405A6842410704A00343089 /* SimpleTwoWayBindingExample */,
 				9405A69A2410704B00343089 /* SimpleTwoWayBindingExampleTests */,
+				9405A6CB24131AFB00343089 /* SimpleTwoWayBindingExampleUITests */,
 			);
 		};
 /* End PBXProject section */
@@ -223,6 +275,13 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		9405A6992410704B00343089 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		9405A6CA24131AFB00343089 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -300,7 +359,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				9405A68D2410704A00343089 /* ViewController.swift in Sources */,
+				9405A68D2410704A00343089 /* S2WBExampleViewController.swift in Sources */,
 				9405A6892410704A00343089 /* AppDelegate.swift in Sources */,
 				9405A68B2410704A00343089 /* SceneDelegate.swift in Sources */,
 			);
@@ -314,6 +373,14 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		9405A6C824131AFB00343089 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				9405A6CF24131AFB00343089 /* SimpleTwoWayBindingExampleUITests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -321,6 +388,11 @@
 			isa = PBXTargetDependency;
 			target = 9405A6842410704A00343089 /* SimpleTwoWayBindingExample */;
 			targetProxy = 9405A69C2410704B00343089 /* PBXContainerItemProxy */;
+		};
+		9405A6D224131AFB00343089 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 9405A6842410704A00343089 /* SimpleTwoWayBindingExample */;
+			targetProxy = 9405A6D124131AFB00343089 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -545,6 +617,44 @@
 			};
 			name = Release;
 		};
+		9405A6D324131AFB00343089 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = DZBRJG6645;
+				INFOPLIST_FILE = SimpleTwoWayBindingExampleUITests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = rwgps.SimpleTwoWayBindingExampleUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = SimpleTwoWayBindingExample;
+			};
+			name = Debug;
+		};
+		9405A6D424131AFB00343089 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = DZBRJG6645;
+				INFOPLIST_FILE = SimpleTwoWayBindingExampleUITests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = rwgps.SimpleTwoWayBindingExampleUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = SimpleTwoWayBindingExample;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -571,6 +681,15 @@
 			buildConfigurations = (
 				9405A6A82410704B00343089 /* Debug */,
 				9405A6A92410704B00343089 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		9405A6D524131AFB00343089 /* Build configuration list for PBXNativeTarget "SimpleTwoWayBindingExampleUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				9405A6D324131AFB00343089 /* Debug */,
+				9405A6D424131AFB00343089 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

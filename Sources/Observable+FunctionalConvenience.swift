@@ -8,7 +8,7 @@
 
 import Foundation
 
-extension Observable {
+public extension Observable {
     /// Bind to this observable with a simple value function, optionally replaying the existing value into the stream immediately
     ///
     /// This is a nice alternative to the standard `bind((Observable<ObservedType>, ObservedType)->Void)`, since we're 99% of the time uninterested in getting a reference to the Observable itself.
