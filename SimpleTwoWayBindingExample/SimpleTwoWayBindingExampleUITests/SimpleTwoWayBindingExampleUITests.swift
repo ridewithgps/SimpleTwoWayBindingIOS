@@ -11,33 +11,101 @@ import XCTest
 class SimpleTwoWayBindingExampleUITests: XCTestCase {
 
     override func setUp() {
-        // Put setup code here. This method is called before the invocation of each test method in the class.
-
-        // In UI tests it is usually best to stop immediately when a failure occurs.
+        XCUIApplication().launch()
         continueAfterFailure = false
-
-        // In UI tests it’s important to set the initial state - such as interface orientation - required for your tests before they run. The setUp method is a good place to do this.
     }
 
     override func tearDown() {
-        // Put teardown code here. This method is called after the invocation of each test method in the class.
+        XCUIApplication().terminate()
     }
 
-    func testExample() {
-        // UI tests must launch the application that they test.
+    func testSwitch() {
         let app = XCUIApplication()
-        app.launch()
-
-        // Use recording to get started writing UI tests.
-        // Use XCTAssert and related functions to verify your tests produce the correct results.
+        let cellSwitch = app.switches["switch"]
+        let cellInfo = app.staticTexts["switchLabel"]
+        
+        let startText = cellInfo.label
+        cellSwitch.swipeLeft() // No-op
+        XCTAssertEqual(cellSwitch.label, startText)
+        
+        cellSwitch.swipeRight() // Turn it on
+        XCTAssertEqual(cellSwitch.label, "The switch is on")
     }
-
-    func testLaunchPerformance() {
-        if #available(macOS 10.15, iOS 13.0, tvOS 13.0, *) {
-            // This measures how long it takes to launch your application.
-            measure(metrics: [XCTOSSignpostMetric.applicationLaunch]) {
-                XCUIApplication().launch()
-            }
-        }
+    
+    func testTextField() {
+        let app = XCUIApplication()
+        let textField = app.textFields["textField"]
+        let textInfo = app.staticTexts["textFieldInformation"]
+        
+        guard let originalValue = textField.value as? String else { return XCTFail() }
+        textField.tap()
+        textField.typeText("1234")
+        var expectedCount = originalValue.count + 4
+        var expectedTFValue = originalValue + "1234"
+        let expectedInfo = "\"\(expectedTFValue)\" has \(expectedCount) characters"
+        XCTAssertEqual(textInfo.label, expectedInfo)
+        
+        textField.typeText("5")
+        expectedCount += 1
+        expectedTFValue += "5"
+        let expectedInfo2 = "\"\(expectedTFValue)\" has \(expectedCount) characters"
+        XCTAssertEqual(textInfo.label, expectedInfo2)
+    }
+    
+    func testSlider() {
+        let app = XCUIApplication()
+        let slider = app.sliders["slider"]
+        let sliderInfo = app.staticTexts["sliderInformation"]
+        
+        slider.adjust(toNormalizedSliderPosition: 0.51)
+        XCTAssertEqual(sliderInfo.label, "🎉🎉🎉🎉🎉")
+        
+        slider.adjust(toNormalizedSliderPosition: 0)
+        XCTAssertEqual(sliderInfo.label, "")
+    }
+    
+    func testStepper() {
+        let app = XCUIApplication()
+        let stepper = app.steppers["stepper"]
+        let stepperInfo = app.staticTexts["stepperInformation"]
+        
+        // Irritating. Steppers render out to two buttons and don't retain any evidence of their original accessibilityIdentifier.
+        let incButton = app.buttons["Increment"]
+        let decButton = app.buttons["Decrement"]
+        incButton.tap()
+        XCTAssertEqual(stepperInfo.label, "🍕")
+        incButton.tap()
+        XCTAssertEqual(stepperInfo.label, "🍕🍕")
+        decButton.tap()
+        decButton.tap()
+        XCTAssertEqual(stepperInfo.label, "")
+    }
+    
+    func testSegmentedControl() {
+        let app = XCUIApplication()
+        let segmentedControl = app.segmentedControls["segmentedControl"]
+        let segmentInfo = app.staticTexts["segmentedControlInformation"]
+        
+        let sunnyButton = segmentedControl.buttons["sun.max"]
+        let tstormButton = segmentedControl.buttons["cloud.bolt.rain"]
+        
+        tstormButton.tap()
+        XCTAssertEqual(segmentInfo.label, "The forecast is: Thunderstorms")
+        sunnyButton.tap()
+        XCTAssertEqual(segmentInfo.label, "The forecast is: Sunny")
+    }
+    
+    func testTextView() {
+        let app = XCUIApplication()
+        let cellSwitch = app.switches["switch"]
+        let slider = app.sliders["slider"]
+        let stepper = app.steppers["stepper"]
+        let textView = app.textViews["textView"]
+        
+        cellSwitch.swipeRight()
+        guard let switchChangedTVValue = textView.value as? String else { return XCTFail() }
+        let tvLine = switchChangedTVValue.split(separator: "\n")
+            .filter { $0.starts(with: "The switch is on:") }
+        XCTAssertEqual(tvLine.first, "The switch is on: true")
     }
 }
