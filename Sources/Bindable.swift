@@ -53,6 +53,7 @@ extension Bindable where Self: NSObject {
         }
     }
 
+    @discardableResult
     public func bind(with observable: Observable<BindingType>) -> BindingReceipt {
         if let _self = self as? UIControl {
             _self.addTarget(Selector, action: Selector{ [weak self] in self?.valueChanged() }, for: [.editingChanged, .valueChanged])

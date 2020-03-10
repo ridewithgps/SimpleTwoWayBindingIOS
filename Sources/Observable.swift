@@ -33,6 +33,7 @@ public class Observable<ObservedType> {
         self.value = value
     }
     
+    @discardableResult
     public func bind(observer: @escaping Observer) -> BindingReceipt {
         let r = BindingReceipt()
         observers[r] = observer

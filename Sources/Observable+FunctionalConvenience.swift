@@ -15,6 +15,7 @@ public extension Observable {
     /// - Parameters:
     ///   - replay: If there's a value in this observable, after setting up the binding immediately fire the observation function with that value, rather than the default behavior of waiting for a new value to come into the stream. Defaults to true.
     ///   - f: an observation function
+    @discardableResult
     func bind(replay: Bool = true, _ f: @escaping (ObservedType) -> Void) -> BindingReceipt {
         let r = bind { _, value in f(value) }
         if replay, let value = value {

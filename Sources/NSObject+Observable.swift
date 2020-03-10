@@ -8,6 +8,7 @@
 import Foundation
 
 extension NSObject {
+    @discardableResult
     public func observe<T>(for observable: Observable<T>, with: @escaping (T) -> ()) -> BindingReceipt {
         observable.bind { observable, value  in
             DispatchQueue.main.async {
