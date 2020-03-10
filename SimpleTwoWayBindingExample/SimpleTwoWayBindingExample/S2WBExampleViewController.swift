@@ -28,6 +28,7 @@ class S2WBExampleViewController: UITableViewController {
         case slider
         case stepper
         case segment
+        case textView
         
         var associatedClass: AnyClass {
             switch self {
@@ -36,6 +37,7 @@ class S2WBExampleViewController: UITableViewController {
             case .slider: return SliderCell.self
             case .stepper: return StepperCell.self
             case .segment: return SegmentedControlCell.self
+            case .textView: return TextViewCell.self
             }
         }
         
@@ -46,6 +48,7 @@ class S2WBExampleViewController: UITableViewController {
             case .slider: return SliderCell.reuseIdentifier
             case .stepper: return StepperCell.reuseIdentifier
             case .segment: return SegmentedControlCell.reuseIdentifier
+            case .textView: return TextViewCell.reuseIdentifier
             }
         }
         
@@ -56,6 +59,7 @@ class S2WBExampleViewController: UITableViewController {
             case .slider: return SliderCell.cellHeight
             case .stepper: return StepperCell.cellHeight
             case .segment: return SegmentedControlCell.cellHeight
+            case .textView: return TextViewCell.cellHeight
             }
         }
     }

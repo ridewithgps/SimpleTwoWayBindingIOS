@@ -22,6 +22,7 @@
 		9405A6DE241703F500343089 /* Slider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9405A6DD241703F500343089 /* Slider.swift */; };
 		9405A6E02417077000343089 /* Stepper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9405A6DF2417077000343089 /* Stepper.swift */; };
 		9405A6E2241709C600343089 /* SegmentedControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9405A6E1241709C600343089 /* SegmentedControl.swift */; };
+		9405A6E424170E5E00343089 /* TextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9405A6E324170E5E00343089 /* TextView.swift */; };
 		B34C5E687779A22F120DA707 /* Pods_SimpleTwoWayBindingExample.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6DA06A37976B0FC4B2988EFF /* Pods_SimpleTwoWayBindingExample.framework */; };
 /* End PBXBuildFile section */
 
@@ -65,6 +66,7 @@
 		9405A6DD241703F500343089 /* Slider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Slider.swift; sourceTree = "<group>"; };
 		9405A6DF2417077000343089 /* Stepper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Stepper.swift; sourceTree = "<group>"; };
 		9405A6E1241709C600343089 /* SegmentedControl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SegmentedControl.swift; sourceTree = "<group>"; };
+		9405A6E324170E5E00343089 /* TextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextView.swift; sourceTree = "<group>"; };
 		AE3BF9977BE89A0B966475A4 /* Pods-SimpleTwoWayBindingExample.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SimpleTwoWayBindingExample.debug.xcconfig"; path = "Target Support Files/Pods-SimpleTwoWayBindingExample/Pods-SimpleTwoWayBindingExample.debug.xcconfig"; sourceTree = "<group>"; };
 		C25964CCFF9D55815AB2858C /* Pods-SimpleTwoWayBindingExampleTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SimpleTwoWayBindingExampleTests.debug.xcconfig"; path = "Target Support Files/Pods-SimpleTwoWayBindingExampleTests/Pods-SimpleTwoWayBindingExampleTests.debug.xcconfig"; sourceTree = "<group>"; };
 		D46B51AE645C880BCA29ADE3 /* Pods-SimpleTwoWayBindingExampleTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SimpleTwoWayBindingExampleTests.release.xcconfig"; path = "Target Support Files/Pods-SimpleTwoWayBindingExampleTests/Pods-SimpleTwoWayBindingExampleTests.release.xcconfig"; sourceTree = "<group>"; };
@@ -171,6 +173,7 @@
 				9405A6DD241703F500343089 /* Slider.swift */,
 				9405A6DF2417077000343089 /* Stepper.swift */,
 				9405A6E1241709C600343089 /* SegmentedControl.swift */,
+				9405A6E324170E5E00343089 /* TextView.swift */,
 			);
 			path = "Example Cells";
 			sourceTree = "<group>";
@@ -394,6 +397,7 @@
 				9405A68B2410704A00343089 /* SceneDelegate.swift in Sources */,
 				9405A6DC2416FDB500343089 /* TextField.swift in Sources */,
 				9405A6DE241703F500343089 /* Slider.swift in Sources */,
+				9405A6E424170E5E00343089 /* TextView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

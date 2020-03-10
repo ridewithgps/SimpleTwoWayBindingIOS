@@ -74,10 +74,26 @@ public extension Observable {
     }
 }
 
+extension Observable where ObservedType: Equatable {
+    /// Only emit values when they differ from the previous value in this observable.
+    /// - Parameter replay: If there's a value in this observable, after setting up the binding immediately fire the observation function with that value, rather than the default behavior of waiting for a new value to come into the stream. Defaults to true.
+    func distinct(replay: Bool = true) -> Observable<ObservedType> {
+        let child = Observable<ObservedType>()
+        let r = bind(replay: replay) { [weak child] newValue in
+            if newValue != child?.value {
+                child?.value = newValue
+            }
+        }
+        child.setObserving({ _ = self }, receipt: r)
+        return child
+    }
+}
+
+
 let ObserverZipThread = DispatchQueue(label: "RWGPS.Observer.Zipping")
 
 /// Given two observables, create a new observable that produces a tuple of the two observers' current values any time either emits a value
-func zip<A, B>(_ a: Observable<A>, _ b: Observable<B>) -> Observable<(A?, B?)> {
+public func zip<A, B>(_ a: Observable<A>, _ b: Observable<B>) -> Observable<(A?, B?)> {
     let child = Observable<(A?, B?)>()
     let ra = a.bind { [weak child] a in
         ObserverZipThread.sync {
@@ -96,18 +112,28 @@ func zip<A, B>(_ a: Observable<A>, _ b: Observable<B>) -> Observable<(A?, B?)> {
     return child
 }
 
-extension Observable where ObservedType: Equatable {
-    /// Only emit values when they differ from the previous value in this observable.
-    /// - Parameter replay: If there's a value in this observable, after setting up the binding immediately fire the observation function with that value, rather than the default behavior of waiting for a new value to come into the stream. Defaults to true.
-    func distinct(replay: Bool = true) -> Observable<ObservedType> {
-        let child = Observable<ObservedType>()
-        let r = bind(replay: replay) { [weak child] newValue in
-            if newValue != child?.value {
-                child?.value = newValue
-            }
+public func zip<A, B, C>(_ a: Observable<A>, _ b: Observable<B>, _ c: Observable<C>) -> Observable<(A?, B?, C?)> {
+    let child = Observable<(A?, B?, C?)>()
+    let ra = a.bind { [weak child] a in
+        ObserverZipThread.sync {
+            let old = child?.value ?? (nil, nil, nil)
+            child?.value = (a, old.1, old.2)
         }
-        child.setObserving({ _ = self }, receipt: r)
-        return child
     }
+    let rb = b.bind { [weak child] b in
+        ObserverZipThread.sync {
+            let old = child?.value ?? (nil, nil, nil)
+            child?.value = (old.0, b, old.2)
+        }
+    }
+    let rc = c.bind { [weak child] c in
+        ObserverZipThread.sync {
+            let old = child?.value ?? (nil, nil, nil)
+            child?.value = (old.0, old.1, c)
+        }
+    }
+    child.setObserving({ _ = a }, receipt: ra)
+    child.setObserving({ _ = b }, receipt: rb)
+    child.setObserving({ _ = c }, receipt: rc)
+    return child
 }
-

@@ -31,6 +31,9 @@ struct S2WBExampleViewModel {
     let selectedSegment: Observable<Int> = Observable()
     let segmentDescription: Observable<String>
     
+    // Text View items
+    let textViewContents: Observable<String>
+    
     init() {
         turnOnDescription = turnOn
             .map { on -> String in
@@ -52,5 +55,14 @@ struct S2WBExampleViewModel {
         segmentDescription = selectedSegment
             .map { ["Sunny", "Partly Cloudy", "Cloudy", "Rain", "Thunderstorms"][$0] }
             .map { "The forecast is: \($0)" }
+        
+        textViewContents = zip(turnOn, sliderPosition, stepperPosition)
+            .map {
+                """
+                The switch is on: \($0.0 ?? false)
+                The slider is at: \($0.1 ?? 0)
+                The stepper is at: \($0.2 ?? 0)
+                """
+            }
     }
 }
