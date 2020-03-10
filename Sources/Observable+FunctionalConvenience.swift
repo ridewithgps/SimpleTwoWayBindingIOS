@@ -74,7 +74,7 @@ public extension Observable {
     }
 }
 
-extension Observable where ObservedType: Equatable {
+public extension Observable where ObservedType: Equatable {
     /// Only emit values when they differ from the previous value in this observable.
     /// - Parameter replay: If there's a value in this observable, after setting up the binding immediately fire the observation function with that value, rather than the default behavior of waiting for a new value to come into the stream. Defaults to true.
     func distinct(replay: Bool = true) -> Observable<ObservedType> {
