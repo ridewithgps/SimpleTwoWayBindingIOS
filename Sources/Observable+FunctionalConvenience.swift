@@ -138,3 +138,36 @@ public func zip<A, B, C>(_ a: Observable<A>, _ b: Observable<B>, _ c: Observable
     child.setObserving({ _ = c }, receipt: rc)
     return child
 }
+
+public func zip<A, B, C, D>(_ a: Observable<A>, _ b: Observable<B>, _ c: Observable<C>, _ d: Observable<D>) -> Observable<(A?, B?, C?, D?)> {
+    let child = Observable<(A?, B?, C?, D?)>()
+    let ra = a.bind { [weak child] a in
+        ObserverZipThread.sync {
+            let old = child?.value ?? (nil, nil, nil, nil)
+            child?.value = (a, old.1, old.2, old.3)
+        }
+    }
+    let rb = b.bind { [weak child] b in
+        ObserverZipThread.sync {
+            let old = child?.value ?? (nil, nil, nil, nil)
+            child?.value = (old.0, b, old.2, old.3)
+        }
+    }
+    let rc = c.bind { [weak child] c in
+        ObserverZipThread.sync {
+            let old = child?.value ?? (nil, nil, nil, nil)
+            child?.value = (old.0, old.1, c, old.3)
+        }
+    }
+    let rd = d.bind { [weak child] c in
+        ObserverZipThread.sync {
+            let old = child?.value ?? (nil, nil, nil, nil)
+            child?.value = (old.0, old.1, old.2, c)
+        }
+    }
+    child.setObserving({ _ = a }, receipt: ra)
+    child.setObserving({ _ = b }, receipt: rb)
+    child.setObserving({ _ = c }, receipt: rc)
+    child.setObserving({ _ = d }, receipt: rd)
+    return child
+}
