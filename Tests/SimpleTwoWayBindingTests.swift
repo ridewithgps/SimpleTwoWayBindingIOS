@@ -255,12 +255,35 @@ class SimpleTwoWayBindingTests: XCTestCase {
         o.value = "o"
     }
     
-    func testZip() {
+    func testDistinct() {
         let o: Observable<String> = Observable()
+        let uo = o.distinct()
+        
+        var bindFired = false
+        var expectation: String?
+        let bindingFunction: (String) -> Void = {
+            bindFired = true
+            XCTAssertEqual($0, expectation)
+        }
+        _ = uo.bind(bindingFunction)
+        
+        expectation = "foo"
+        o.value = "foo"
+        XCTAssert(bindFired)
+        bindFired = false
+        o.value = "foo"
+        XCTAssertFalse(bindFired)
+        expectation = "bar"
+        o.value = "bar"
+        XCTAssert(bindFired)
+    }
+    
+    func testZip2() {
+        let o: Observable<String> = Observable("a")
         var p: Observable<Int>? = Observable()
         let op = zip(o, p!)
         
-        var expectation: (String?, Int?) = (nil, nil)
+        var expectation: (String?, Int?) = ("a", nil)
         var bindFired = false
         let bindingFunction: ((String?, Int?)) -> Void = {
             bindFired = true
@@ -285,26 +308,90 @@ class SimpleTwoWayBindingTests: XCTestCase {
         XCTAssert(bindFired)
     }
     
-    func testDistinct() {
-        let o: Observable<String> = Observable()
-        let uo = o.distinct()
+    func testZip3() {
+        let a = Observable("a")
+        let b = Observable("b")
+        let c: Observable<Int> = Observable()
         
         var bindFired = false
-        var expectation: String?
-        let bindingFunction: (String) -> Void = {
+        var expectedValues: (String?, String?, Int?) = ("a", "b", nil)
+        let bindingFunction: ((String?, String?, Int?)) -> Void = {
             bindFired = true
-            XCTAssertEqual($0, expectation)
+            XCTAssertEqual($0.0, expectedValues.0)
+            XCTAssertEqual($0.1, expectedValues.1)
+            XCTAssertEqual($0.2, expectedValues.2)
         }
-        _ = uo.bind(bindingFunction)
         
-        expectation = "foo"
-        o.value = "foo"
-        XCTAssert(bindFired)
+        let z = zip(a, b, c)
+        _ = z.bind(bindingFunction)
+        
+        expectedValues = ("1", "b", nil)
+        a.value = "1"
+        XCTAssertTrue(bindFired)
         bindFired = false
-        o.value = "foo"
-        XCTAssertFalse(bindFired)
-        expectation = "bar"
-        o.value = "bar"
-        XCTAssert(bindFired)
+        expectedValues = ("1", "b", 1)
+        c.value = 1
+        XCTAssertTrue(bindFired)
+        
+    }
+    
+    func testZip4() {
+        let a = Observable("a")
+        let b = Observable("b")
+        let c = Observable("c")
+        let d: Observable<String> = Observable()
+        
+        var bindFired = false
+        var expectedValues: (String?, String?, String?, String?) = ("a", "b", "c", nil)
+        let bindingFunction: ((String?, String?, String?, String?)) -> Void = {
+            bindFired = true
+            XCTAssertEqual($0.0, expectedValues.0)
+            XCTAssertEqual($0.1, expectedValues.1)
+            XCTAssertEqual($0.2, expectedValues.2)
+            XCTAssertEqual($0.3, expectedValues.3)
+        }
+        
+        let z = zip(a, b, c, d)
+        _ = z.bind(bindingFunction)
+        
+        expectedValues = ("1", "b", "c", nil)
+        a.value = "1"
+        XCTAssertTrue(bindFired)
+        bindFired = false
+        expectedValues = ("1", "b", "c", "1")
+        d.value = "1"
+        XCTAssertTrue(bindFired)
+        
+    }
+    
+    func testZip5() {
+        let a = Observable("a")
+        let b = Observable("b")
+        let c = Observable("c")
+        let d = Observable("d")
+        let e: Observable<String> = Observable()
+        
+        var bindFired = false
+        var expectedValues: (String?, String?, String?, String?, String?) = ("a", "b", "c", "d", nil)
+        let bindingFunction: ((String?, String?, String?, String?, String?)) -> Void = {
+            bindFired = true
+            XCTAssertEqual($0.0, expectedValues.0)
+            XCTAssertEqual($0.1, expectedValues.1)
+            XCTAssertEqual($0.2, expectedValues.2)
+            XCTAssertEqual($0.3, expectedValues.3)
+            XCTAssertEqual($0.4, expectedValues.4)
+        }
+        
+        let z = zip(a, b, c, d, e)
+        _ = z.bind(bindingFunction)
+        
+        expectedValues = ("1", "b", "c", "d", nil)
+        a.value = "1"
+        XCTAssertTrue(bindFired)
+        bindFired = false
+        expectedValues = ("1", "b", "c", "d", "1")
+        e.value = "1"
+        XCTAssertTrue(bindFired)
+        
     }
 }
