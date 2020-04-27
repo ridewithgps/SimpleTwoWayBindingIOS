@@ -73,6 +73,21 @@ public extension Observable {
             return value
         }
     }
+    
+    /// Creates a new observable whose value is mapped from this observable's values, unless the mapping function returns nil
+    /// - Parameters:
+    ///   - replay: If there's a value in this observable, after setting up the binding immediately fire the observation function with that value, rather than the default behavior of waiting for a new value to come into the stream. Defaults to true.
+    ///   - f: mapping function from this observable's values to an optional of the new observable's values.
+    func compactMap<A>(replay: Bool = true, _ f: @escaping (ObservedType) -> A?) -> Observable<A> {
+        let child = Observable<A>()
+        let r = bind(replay: replay) { [weak child] value in
+            if let v = f(value) {
+                child?.value = v
+            }
+        }
+        child.setObserving({ _ = self }, receipt: r)
+        return child
+    }
 }
 
 public extension Observable where ObservedType: Equatable {

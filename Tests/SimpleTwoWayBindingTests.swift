@@ -394,4 +394,29 @@ class SimpleTwoWayBindingTests: XCTestCase {
         XCTAssertTrue(bindFired)
         
     }
+    
+    func testCompactMap() {
+        let a = Observable("A")
+        
+        var bindFired = false
+        let b = a.compactMap { v -> String? in
+            bindFired = true
+            if v.count == 1 {
+                return nil
+            } else {
+                return v
+            }
+        }
+        
+        XCTAssert(bindFired, "Replay should have fired the binding")
+        XCTAssertNil(b.value, "B should not have gotten a value")
+        bindFired = false
+        a.value = "foo"
+        XCTAssert(bindFired, "Should have fired the binding")
+        XCTAssertEqual(b.value, "foo", "B should have gotten a value")
+        bindFired = false
+        a.value = "x"
+        XCTAssert(bindFired, "Should have fired the binding")
+        XCTAssertEqual(b.value, "foo", "B should not have gotten a new value")
+    }
 }
