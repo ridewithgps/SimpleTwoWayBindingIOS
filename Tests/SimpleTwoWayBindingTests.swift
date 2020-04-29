@@ -419,4 +419,17 @@ class SimpleTwoWayBindingTests: XCTestCase {
         XCTAssert(bindFired, "Should have fired the binding")
         XCTAssertEqual(b.value, "foo", "B should not have gotten a new value")
     }
+    
+    func testBindUI() {
+        let a = Observable("A")
+        
+        var bindFired = false
+        a.bindUI { s in
+            bindFired = true
+            XCTAssert(Thread.isMainThread, "Bind was not run on main thread!")
+        }
+        
+        a.value = "b"
+        XCTAssert(bindFired, "Bind should have fired")
+    }
 }

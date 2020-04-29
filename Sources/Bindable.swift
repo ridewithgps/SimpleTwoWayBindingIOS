@@ -65,6 +65,5 @@ extension Bindable where Self: NSObject {
         return self.observe(for: observable) { (value) in
             self.updateValue(with: value)
         }
-    }
-    
+    }    
 }
