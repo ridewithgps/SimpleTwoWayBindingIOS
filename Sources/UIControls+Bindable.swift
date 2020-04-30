@@ -82,12 +82,19 @@ public class BindableTextView: UITextView, Bindable, UITextViewDelegate {
         }
     }
     
-    public func bind(with observable: Observable<String>) -> BindingReceipt {
+    public func bind(replay: Bool = false, with observable: Observable<String>) -> BindingReceipt {
         self.delegate = self
         self.register(for: observable)
-        return self.observe(for: observable) { [weak self] (value) in
+        let r = self.observe(for: observable) { [weak self] (value) in
             self?.updateValue(with: value)
         }
+        if let s = observable.value {
+            DispatchQueue.main.async { [weak self] in
+                self?.updateValue(with: s)
+            }
+            
+        }
+        return r
     }
     
     public func textViewDidChange(_ textView: UITextView) {
