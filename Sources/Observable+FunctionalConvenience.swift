@@ -24,9 +24,18 @@ public extension Observable {
         return r
     }
     
+    func pausableBind(replay: Bool = true, _ f: @escaping (ObservedType) -> Void) -> PausableReceipt {
+        PausableReceipt(
+            receipt: bind(replay: replay, f),
+            unbind: unbind,
+            pauseObservations: pauseObservations,
+            unpauseObservations: unpauseObservations
+        )
+    }
+    
     @discardableResult
     func bindUI(replay: Bool = true, _ f: @escaping (ObservedType) -> Void) -> BindingReceipt {
-        let r = bind { _, value in
+        let r: BindingReceipt = bind { _, value in
             DispatchQueue.main.async {
                 f(value)
             }
@@ -39,13 +48,22 @@ public extension Observable {
         return r
     }
     
+    func pausableBindUI(replay: Bool = true, _ f: @escaping (ObservedType) -> Void) -> PausableReceipt {
+        PausableReceipt(
+            receipt: bindUI(replay: replay, f),
+            unbind: unbind,
+            pauseObservations: pauseObservations,
+            unpauseObservations: unpauseObservations
+        )
+    }
+    
     /// Create a new observable whose value is mapped from this observable's values
     /// - Parameters:
     ///   - replay: If there's a value in this observable, after setting up the binding immediately fire the observation function with that value, rather than the default behavior of waiting for a new value to come into the stream. Defaults to true.
     ///   - f: mapping function from this observable's values to the new observable's values
     func map<A>(replay: Bool = true, _ f: @escaping (ObservedType) -> A) -> Observable<A> {
         let child = Observable<A>()
-        let r = bind(replay: replay) { [weak child] value in
+        let r: BindingReceipt = bind(replay: replay) { [weak child] value in
             child?.value = f(value)
         }
         child.setObserving({ _ = self }, receipt: r)
@@ -58,7 +76,7 @@ public extension Observable {
     ///   - f: filter function on this observable's values
     func filter(replay: Bool = true, _ f: @escaping (ObservedType) -> Bool) -> Observable<ObservedType> {
         let child = Observable<ObservedType>()
-        let r = bind(replay: replay) { [weak child] value in
+        let r: BindingReceipt = bind(replay: replay) { [weak child] value in
             if f(value) {
                 child?.value = value
             }
@@ -74,7 +92,7 @@ public extension Observable {
     ///   - reducer: reducer function to integrate our new value with the new observable's value
     func reduce<A>(replay: Bool = true, initial: A, _ reducer: @escaping (A, ObservedType) -> A) -> Observable<A> {
         let child = Observable<A>()
-        let r = bind(replay: replay) { [weak child] newValue in
+        let r: BindingReceipt = bind(replay: replay) { [weak child] newValue in
             let oldValue = child?.value ?? initial
             child?.value = reducer(oldValue, newValue)
         }
@@ -95,7 +113,7 @@ public extension Observable {
     ///   - f: mapping function from this observable's values to an optional of the new observable's values.
     func compactMap<A>(replay: Bool = true, _ f: @escaping (ObservedType) -> A?) -> Observable<A> {
         let child = Observable<A>()
-        let r = bind(replay: replay) { [weak child] value in
+        let r: BindingReceipt = bind(replay: replay) { [weak child] value in
             if let v = f(value) {
                 child?.value = v
             }
@@ -110,7 +128,7 @@ public extension Observable where ObservedType: Equatable {
     /// - Parameter replay: If there's a value in this observable, after setting up the binding immediately fire the observation function with that value, rather than the default behavior of waiting for a new value to come into the stream. Defaults to true.
     func distinct(replay: Bool = true) -> Observable<ObservedType> {
         let child = Observable<ObservedType>()
-        let r = bind(replay: replay) { [weak child] newValue in
+        let r: BindingReceipt = bind(replay: replay) { [weak child] newValue in
             if newValue != child?.value {
                 child?.value = newValue
             }
@@ -126,13 +144,13 @@ let ObserverZipThread = DispatchQueue(label: "RWGPS.Observer.Zipping")
 /// Given two observables, create a new observable that produces a tuple of the two observers' current values any time either emits a value
 public func zip<A, B>(_ a: Observable<A>, _ b: Observable<B>) -> Observable<(A?, B?)> {
     let child = Observable<(A?, B?)>()
-    let ra = a.bind { [weak child] a in
+    let ra: BindingReceipt = a.bind { [weak child] a in
         ObserverZipThread.sync {
             let old = child?.value ?? (nil, nil)
             child?.value = (a, old.1)
         }
     }
-    let rb = b.bind { [weak child] b in
+    let rb: BindingReceipt = b.bind { [weak child] b in
         ObserverZipThread.sync {
             let old = child?.value ?? (nil, nil)
             child?.value = (old.0, b)
@@ -145,19 +163,19 @@ public func zip<A, B>(_ a: Observable<A>, _ b: Observable<B>) -> Observable<(A?,
 
 public func zip<A, B, C>(_ a: Observable<A>, _ b: Observable<B>, _ c: Observable<C>) -> Observable<(A?, B?, C?)> {
     let child = Observable<(A?, B?, C?)>()
-    let ra = a.bind { [weak child] a in
+    let ra: BindingReceipt = a.bind { [weak child] a in
         ObserverZipThread.sync {
             let old = child?.value ?? (nil, nil, nil)
             child?.value = (a, old.1, old.2)
         }
     }
-    let rb = b.bind { [weak child] b in
+    let rb: BindingReceipt = b.bind { [weak child] b in
         ObserverZipThread.sync {
             let old = child?.value ?? (nil, nil, nil)
             child?.value = (old.0, b, old.2)
         }
     }
-    let rc = c.bind { [weak child] c in
+    let rc: BindingReceipt = c.bind { [weak child] c in
         ObserverZipThread.sync {
             let old = child?.value ?? (nil, nil, nil)
             child?.value = (old.0, old.1, c)
@@ -171,25 +189,25 @@ public func zip<A, B, C>(_ a: Observable<A>, _ b: Observable<B>, _ c: Observable
 
 public func zip<A, B, C, D>(_ a: Observable<A>, _ b: Observable<B>, _ c: Observable<C>, _ d: Observable<D>) -> Observable<(A?, B?, C?, D?)> {
     let child = Observable<(A?, B?, C?, D?)>()
-    let ra = a.bind { [weak child] a in
+    let ra: BindingReceipt = a.bind { [weak child] a in
         ObserverZipThread.sync {
             let old = child?.value ?? (nil, nil, nil, nil)
             child?.value = (a, old.1, old.2, old.3)
         }
     }
-    let rb = b.bind { [weak child] b in
+    let rb: BindingReceipt = b.bind { [weak child] b in
         ObserverZipThread.sync {
             let old = child?.value ?? (nil, nil, nil, nil)
             child?.value = (old.0, b, old.2, old.3)
         }
     }
-    let rc = c.bind { [weak child] c in
+    let rc: BindingReceipt = c.bind { [weak child] c in
         ObserverZipThread.sync {
             let old = child?.value ?? (nil, nil, nil, nil)
             child?.value = (old.0, old.1, c, old.3)
         }
     }
-    let rd = d.bind { [weak child] c in
+    let rd: BindingReceipt = d.bind { [weak child] c in
         ObserverZipThread.sync {
             let old = child?.value ?? (nil, nil, nil, nil)
             child?.value = (old.0, old.1, old.2, c)
@@ -204,31 +222,31 @@ public func zip<A, B, C, D>(_ a: Observable<A>, _ b: Observable<B>, _ c: Observa
 
 public func zip<A, B, C, D, E>(_ a: Observable<A>, _ b: Observable<B>, _ c: Observable<C>, _ d: Observable<D>, _ e: Observable<E>) -> Observable<(A?, B?, C?, D?, E?)> {
     let child = Observable<(A?, B?, C?, D?, E?)>()
-    let ra = a.bind { [weak child] a in
+    let ra: BindingReceipt = a.bind { [weak child] a in
         ObserverZipThread.sync {
             let old = child?.value ?? (nil, nil, nil, nil, nil)
             child?.value = (a, old.1, old.2, old.3, old.4)
         }
     }
-    let rb = b.bind { [weak child] b in
+    let rb: BindingReceipt = b.bind { [weak child] b in
         ObserverZipThread.sync {
             let old = child?.value ?? (nil, nil, nil, nil, nil)
             child?.value = (old.0, b, old.2, old.3, old.4)
         }
     }
-    let rc = c.bind { [weak child] c in
+    let rc: BindingReceipt = c.bind { [weak child] c in
         ObserverZipThread.sync {
             let old = child?.value ?? (nil, nil, nil, nil, nil)
             child?.value = (old.0, old.1, c, old.3, old.4)
         }
     }
-    let rd = d.bind { [weak child] d in
+    let rd: BindingReceipt = d.bind { [weak child] d in
         ObserverZipThread.sync {
             let old = child?.value ?? (nil, nil, nil, nil, nil)
             child?.value = (old.0, old.1, old.2, d, old.4)
         }
     }
-    let re = e.bind { [weak child] e in
+    let re: BindingReceipt = e.bind { [weak child] e in
         ObserverZipThread.sync {
             let old = child?.value ?? (nil, nil, nil, nil, nil)
             child?.value = (old.0, old.1, old.2, old.3, e)

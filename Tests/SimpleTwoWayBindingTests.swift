@@ -13,7 +13,7 @@ class SimpleTwoWayBindingTests: XCTestCase {
     func testBasicBind() {
         let o = Observable<String>()
         var i = 0
-        _ = o.bind(replay: false) {
+        o.bind(replay: false) {
             i = 1
             XCTAssertEqual("foo", $0)
         }
@@ -23,7 +23,7 @@ class SimpleTwoWayBindingTests: XCTestCase {
     
     func testBasicUnbind() {
         let o = Observable<String>()
-        let ro = o.bind {
+        let ro: BindingReceipt = o.bind {
             XCTAssertEqual(3, $0.count)
         }
         o.value = "foo"
@@ -34,7 +34,7 @@ class SimpleTwoWayBindingTests: XCTestCase {
     func testMap() {
         let o = Observable<String>()
         var oBindingFired = false
-        _ = o.bind {
+        o.bind {
             oBindingFired = true
             XCTAssertEqual("b", $0.first)
         }
@@ -64,7 +64,7 @@ class SimpleTwoWayBindingTests: XCTestCase {
         let o: Observable<String> = Observable()
         var oBindingFired = false
 
-        _ = o.bind {
+        o.bind {
             oBindingFired = true
             XCTAssertEqual("b", $0.first)
         }

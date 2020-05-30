@@ -7,10 +7,27 @@
 
 import Foundation
 
+public class ReceiptBag {
+    public var receipts: [PausableReceipt] = []
+    
+    func pause() { receipts.forEach { $0.pauseObservations() } }
+    func unpause() { receipts.forEach { $0.unpauseObservations() } }
+}
+
 public struct BindingReceipt: Hashable, Identifiable {
     public let id = UUID()
     public func hash(into hasher: inout Hasher) { hasher.combine(id) }
     public static func == (lhs: BindingReceipt, rhs: BindingReceipt) -> Bool { lhs.id == rhs.id }
+}
+
+public struct PausableReceipt {
+    public let receipt: BindingReceipt
+    
+    public var unbind: (BindingReceipt) -> Void
+    public var pauseObservations: () -> Void
+    public var unpauseObservations: () -> Void
+     
+    public func add(to bag: ReceiptBag) { bag.receipts.append(self) }
 }
 
 public class Observable<ObservedType> {
@@ -40,6 +57,14 @@ public class Observable<ObservedType> {
         return r
     }
     
+    public func pausableBind(observer: @escaping Observer) -> PausableReceipt {
+        PausableReceipt(
+            receipt: bind(observer: observer),
+            unbind: unbind,
+            pauseObservations: pauseObservations,
+            unpauseObservations: unpauseObservations)
+    }
+    
     public func setObserving(_ referenceHolder: @escaping () -> Void, receipt: BindingReceipt) {
         bindings[receipt] = referenceHolder
     }
@@ -55,8 +80,14 @@ public class Observable<ObservedType> {
     
     private func notifyObservers(_ value: ObservedType) {
         observers.values.forEach { [unowned self] observer in
+            guard paused == false else { return }
             observer(self, value)
         }
     }
+    
+    private var paused: Bool = false
+    
+    public func pauseObservations() { paused = true }
+    public func unpauseObservations() { paused = false }
 }
 
