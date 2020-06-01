@@ -6,12 +6,40 @@
 //
 
 import Foundation
+import UIKit
 
+/// A helper class to manage pausable receipts
 public class ReceiptBag {
     public var receipts: [PausableReceipt] = []
     
-    func pause() { receipts.forEach { $0.pauseObservations() } }
-    func unpause() { receipts.forEach { $0.unpauseObservations() } }
+    /// Pause observations in all receipts we're holding
+    public func pause() { receipts.forEach { $0.pauseObservations() } }
+    
+    /// Unpause observations in all receipts we're holding
+    public func unpause() { receipts.forEach { $0.unpauseObservations() } }
+    
+    private var handleBackgroundNotifications = true
+    private var observers: [NSObjectProtocol] = []
+    
+    /// - Parameter handleBackgroundNotifications: When true, this bag will automatically sign up for iOS background/foreground notifications; when those are triggered, the bag's receipts will be paused and unpaused
+    public init(handleBackgroundNotifications: Bool = true) {
+        self.handleBackgroundNotifications = handleBackgroundNotifications
+        
+        if handleBackgroundNotifications {
+            observers = [
+                NotificationCenter.default.addObserver(
+                    forName: UIApplication.didEnterBackgroundNotification,
+                    object: nil, queue: nil
+                ) { [weak self] _ in self?.pause() },
+                NotificationCenter.default.addObserver(
+                    forName: UIApplication.didBecomeActiveNotification,
+                    object: nil, queue: nil
+                ) { [weak self] _ in self?.unpause() }
+            ]
+        }
+    }
+    
+    deinit { observers.forEach(NotificationCenter.default.removeObserver) }
 }
 
 public struct BindingReceipt: Hashable, Identifiable {

@@ -22,10 +22,7 @@ class SimpleTwoWayBindingReceiptBagTests: XCTestCase {
             .pausableBind(replay: false) { _ in oBindingFired = true }
             .add(to: bag)
         p
-            .pausableBind(replay: false) { _ in
-                pBindingFired = true
-                
-        }
+            .pausableBind(replay: false) { _ in pBindingFired = true }
             .add(to: bag)
         
         o.value = 2
@@ -51,5 +48,27 @@ class SimpleTwoWayBindingReceiptBagTests: XCTestCase {
         XCTAssert(oBindingFired)
         XCTAssert(pBindingFired)
 
+    }
+    
+    func testPauseOnBackground() {
+        let bag = ReceiptBag()
+        let o: Observable<Int> = Observable(1)
+        
+        var oBindingFired = false
+        
+        o
+            .pausableBind(replay: false) { _ in oBindingFired = true }
+            .add(to: bag)
+        
+        NotificationCenter.default.post(name: UIApplication.didEnterBackgroundNotification, object: nil)
+        
+        o.value = 2
+        XCTAssertFalse(oBindingFired)
+        
+        NotificationCenter.default.post(name: UIApplication.didBecomeActiveNotification, object: nil)
+        
+        o.value = 3
+        XCTAssert(oBindingFired)
+        
     }
 }
