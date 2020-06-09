@@ -308,6 +308,60 @@ class SimpleTwoWayBindingTests: XCTestCase {
         XCTAssert(bindFired)
     }
     
+    func testZipAZip() {
+        let o: Observable<String> = Observable("a")
+        var p: Observable<Int>? = Observable()
+        let op = zip(o, p!)
+        var q: Observable<Bool> = Observable(true)
+        let opq = zip(op, q)
+        
+        var expected: ((String?, Int?), Bool?) = (("a", nil), true)
+        let bindingFunction: (((String?, Int?)?, Bool?)) -> Void = {
+            guard let t = $0.0 else { return XCTFail("Should have had a tuple in position 0") }
+            XCTAssertEqual(t.0, expected.0.0)
+            XCTAssertEqual(t.1, expected.0.1)
+            XCTAssertEqual($0.1, expected.1)
+        }
+        _ = opq.bind(replay: false, bindingFunction)
+        expected = (("foo", nil), true)
+        o.value = "foo"
+        
+        expected = (("foo", 42), true)
+        
+        p?.value = 42
+        expected = (("bar", 42), true)
+        
+        o.value = "bar"
+        expected = (("bar", 42), false)
+        q.value = false
+    }
+    
+    func testZip2AZip2() {
+        let a = Observable("a")
+        let b = Observable("b")
+        let ab = zip(a, b)
+        let c = Observable("c")
+        let d = Observable("d")
+        let cd = zip(c, d)
+        
+        var bindFired = false
+        var expectedValues: ((String?, String?), (String?, String?)) = (("a", "b"), ("c", "d"))
+        let bindingFunction: (((String?, String?)?, (String?, String?)?)?) -> Void = {
+            bindFired = true
+            XCTAssertEqual($0?.0?.0, expectedValues.0.0)
+            XCTAssertEqual($0?.0?.1, expectedValues.0.1)
+            XCTAssertEqual($0?.1?.0, expectedValues.1.0)
+            XCTAssertEqual($0?.1?.1, expectedValues.1.1)
+        }
+        
+        let z = zip(ab, cd)
+        _ = z.bind(bindingFunction)
+        
+        expectedValues = (("1", "b"), ("c", "d"))
+        a.value = "1"
+        XCTAssertTrue(bindFired)
+    }
+    
     func testZip3() {
         let a = Observable("a")
         let b = Observable("b")
@@ -423,13 +477,13 @@ class SimpleTwoWayBindingTests: XCTestCase {
     func testBindUI() {
         let a = Observable("A")
         
-        var bindFired = false
-        a.bindUI { s in
-            bindFired = true
-            XCTAssert(Thread.isMainThread, "Bind was not run on main thread!")
+        let bindFired = expectation(description: "UI Binding fired")
+        a.bindUI(replay: false) { s in
+            XCTAssertEqual(s, "b")
+            bindFired.fulfill()
         }
         
         a.value = "b"
-        XCTAssert(bindFired, "Bind should have fired")
+        wait(for: [bindFired], timeout: 1)
     }
 }
