@@ -141,121 +141,126 @@ public extension Observable where ObservedType: Equatable {
 
 let ObserverZipThread = DispatchQueue(label: "RWGPS.Observer.Zipping")
 
+private class Zip2Observable<A, B>: Observable<(A?, B?)> {
+    weak var a: Observable<A>?
+    weak var b: Observable<B>?
+    
+    init(_ a: Observable<A>, _ b: Observable<B>) {
+        self.a = a
+        self.b = b
+        
+        super.init()
+        let ra = a.bind(replay: false) { [weak self] a in
+            self?.value = (a, self?.b?.value)
+        }
+        let rb = b.bind(replay: false) { [weak self] b in
+            self?.value = (self?.a?.value, b)
+        }
+        setObserving({ _ = a }, receipt: ra)
+        setObserving({ _ = b }, receipt: rb)
+        if let v = a.value {
+            a.value = v
+        } else if let v = b.value {
+            b.value = v
+        }
+    }
+}
+
 /// Given two observables, create a new observable that produces a tuple of the two observers' current values any time either emits a value
-public func zip<A, B>(_ a: Observable<A>, _ b: Observable<B>) -> Observable<(A?, B?)> {
-    let child = Observable<(A?, B?)>()
-    let ra: BindingReceipt = a.bind { [weak child] a in
-        ObserverZipThread.sync {
-            let old = child?.value ?? (nil, nil)
-            child?.value = (a, old.1)
+public func zip<A, B>(_ a: Observable<A>, _ b: Observable<B>) -> Observable<(A?, B?)> { Zip2Observable(a, b) }
+
+private class Zip3Observable<A, B, C>: Observable<(A?, B?, C?)> {
+    weak var ab: Zip2Observable<A, B>?
+    weak var c: Observable<C>?
+    
+    init(_ a: Observable<A>, _ b: Observable<B>, _ c: Observable<C>) {
+        let ab = Zip2Observable(a, b)
+        self.ab = ab
+        self.c = c
+        
+        super.init()
+        let rab = ab.bind(replay: false) { [weak self] ab in
+            self?.value = (ab.0, ab.1, self?.c?.value)
+        }
+        let rc = c.bind(replay: false) { [weak self] c in
+            self?.value = (self?.ab?.value?.0, self?.ab?.value?.1, c)
+        }
+        setObserving({ _ = ab }, receipt: rab)
+        setObserving({ _ = b }, receipt: rc)
+        if let v = a.value {
+            a.value = v
+        } else if let v = b.value {
+            b.value = v
+        } else if let v = c.value {
+            c.value = v
         }
     }
-    let rb: BindingReceipt = b.bind { [weak child] b in
-        ObserverZipThread.sync {
-            let old = child?.value ?? (nil, nil)
-            child?.value = (old.0, b)
-        }
-    }
-    child.setObserving({ _ = a }, receipt: ra)
-    child.setObserving({ _ = b }, receipt: rb)
-    return child
 }
 
-public func zip<A, B, C>(_ a: Observable<A>, _ b: Observable<B>, _ c: Observable<C>) -> Observable<(A?, B?, C?)> {
-    let child = Observable<(A?, B?, C?)>()
-    let ra: BindingReceipt = a.bind { [weak child] a in
-        ObserverZipThread.sync {
-            let old = child?.value ?? (nil, nil, nil)
-            child?.value = (a, old.1, old.2)
+public func zip<A, B, C>(_ a: Observable<A>, _ b: Observable<B>, _ c: Observable<C>) -> Observable<(A?, B?, C?)> { Zip3Observable(a, b, c) }
+
+private class Zip4Observable<A, B, C, D>: Observable<(A?, B?, C?, D?)> {
+    weak var abc: Zip3Observable<A, B, C>?
+    weak var d: Observable<D>?
+    
+    init(_ a: Observable<A>, _ b: Observable<B>, _ c: Observable<C>, _ d: Observable<D>) {
+        let abc = Zip3Observable(a, b, c)
+        self.abc = abc
+        self.d = d
+        
+        super.init()
+        let rabc = abc.bind(replay: false) { [weak self] abc in
+            self?.value = (abc.0, abc.1, abc.2, self?.d?.value)
+        }
+        let rd = d.bind(replay: false) { [weak self] d in
+            self?.value = (self?.abc?.value?.0, self?.abc?.value?.1, self?.abc?.value?.2, d)
+        }
+        setObserving({ _ = abc }, receipt: rabc)
+        setObserving({ _ = d }, receipt: rd)
+        if let v = a.value {
+            a.value = v
+        } else if let v = b.value {
+            b.value = v
+        } else if let v = c.value {
+            c.value = v
+        } else if let v = d.value {
+            d.value = v
         }
     }
-    let rb: BindingReceipt = b.bind { [weak child] b in
-        ObserverZipThread.sync {
-            let old = child?.value ?? (nil, nil, nil)
-            child?.value = (old.0, b, old.2)
-        }
-    }
-    let rc: BindingReceipt = c.bind { [weak child] c in
-        ObserverZipThread.sync {
-            let old = child?.value ?? (nil, nil, nil)
-            child?.value = (old.0, old.1, c)
-        }
-    }
-    child.setObserving({ _ = a }, receipt: ra)
-    child.setObserving({ _ = b }, receipt: rb)
-    child.setObserving({ _ = c }, receipt: rc)
-    return child
 }
 
-public func zip<A, B, C, D>(_ a: Observable<A>, _ b: Observable<B>, _ c: Observable<C>, _ d: Observable<D>) -> Observable<(A?, B?, C?, D?)> {
-    let child = Observable<(A?, B?, C?, D?)>()
-    let ra: BindingReceipt = a.bind { [weak child] a in
-        ObserverZipThread.sync {
-            let old = child?.value ?? (nil, nil, nil, nil)
-            child?.value = (a, old.1, old.2, old.3)
+public func zip<A, B, C, D>(_ a: Observable<A>, _ b: Observable<B>, _ c: Observable<C>, _ d: Observable<D>) -> Observable<(A?, B?, C?, D?)> { Zip4Observable(a, b, c, d) }
+
+private class Zip5Observable<A, B, C, D, E>: Observable<(A?, B?, C?, D?, E?)> {
+    weak var abcd: Zip4Observable<A, B, C, D>?
+    weak var e: Observable<E>?
+    
+    init(_ a: Observable<A>, _ b: Observable<B>, _ c: Observable<C>, _ d: Observable<D>, _ e: Observable<E>) {
+        let abcd = Zip4Observable(a, b, c, d)
+        self.abcd = abcd
+        self.e = e
+        
+        super.init()
+        let rabcd = abcd.bind(replay: false) { [weak self] abcd in
+            self?.value = (abcd.0, abcd.1, abcd.2, abcd.3, self?.e?.value)
+        }
+        let re = e.bind(replay: false) { [weak self] e in
+            self?.value = (self?.abcd?.value?.0, self?.abcd?.value?.1, self?.abcd?.value?.2, self?.abcd?.value?.3, e)
+        }
+        setObserving({ _ = abcd }, receipt: rabcd)
+        setObserving({ _ = e }, receipt: re)
+        if let v = a.value {
+            a.value = v
+        } else if let v = b.value {
+            b.value = v
+        } else if let v = c.value {
+            c.value = v
+        } else if let v = d.value {
+            d.value = v
+        } else if let v = e.value {
+            e.value = v
         }
     }
-    let rb: BindingReceipt = b.bind { [weak child] b in
-        ObserverZipThread.sync {
-            let old = child?.value ?? (nil, nil, nil, nil)
-            child?.value = (old.0, b, old.2, old.3)
-        }
-    }
-    let rc: BindingReceipt = c.bind { [weak child] c in
-        ObserverZipThread.sync {
-            let old = child?.value ?? (nil, nil, nil, nil)
-            child?.value = (old.0, old.1, c, old.3)
-        }
-    }
-    let rd: BindingReceipt = d.bind { [weak child] c in
-        ObserverZipThread.sync {
-            let old = child?.value ?? (nil, nil, nil, nil)
-            child?.value = (old.0, old.1, old.2, c)
-        }
-    }
-    child.setObserving({ _ = a }, receipt: ra)
-    child.setObserving({ _ = b }, receipt: rb)
-    child.setObserving({ _ = c }, receipt: rc)
-    child.setObserving({ _ = d }, receipt: rd)
-    return child
 }
 
-public func zip<A, B, C, D, E>(_ a: Observable<A>, _ b: Observable<B>, _ c: Observable<C>, _ d: Observable<D>, _ e: Observable<E>) -> Observable<(A?, B?, C?, D?, E?)> {
-    let child = Observable<(A?, B?, C?, D?, E?)>()
-    let ra: BindingReceipt = a.bind { [weak child] a in
-        ObserverZipThread.sync {
-            let old = child?.value ?? (nil, nil, nil, nil, nil)
-            child?.value = (a, old.1, old.2, old.3, old.4)
-        }
-    }
-    let rb: BindingReceipt = b.bind { [weak child] b in
-        ObserverZipThread.sync {
-            let old = child?.value ?? (nil, nil, nil, nil, nil)
-            child?.value = (old.0, b, old.2, old.3, old.4)
-        }
-    }
-    let rc: BindingReceipt = c.bind { [weak child] c in
-        ObserverZipThread.sync {
-            let old = child?.value ?? (nil, nil, nil, nil, nil)
-            child?.value = (old.0, old.1, c, old.3, old.4)
-        }
-    }
-    let rd: BindingReceipt = d.bind { [weak child] d in
-        ObserverZipThread.sync {
-            let old = child?.value ?? (nil, nil, nil, nil, nil)
-            child?.value = (old.0, old.1, old.2, d, old.4)
-        }
-    }
-    let re: BindingReceipt = e.bind { [weak child] e in
-        ObserverZipThread.sync {
-            let old = child?.value ?? (nil, nil, nil, nil, nil)
-            child?.value = (old.0, old.1, old.2, old.3, e)
-        }
-    }
-    child.setObserving({ _ = a }, receipt: ra)
-    child.setObserving({ _ = b }, receipt: rb)
-    child.setObserving({ _ = c }, receipt: rc)
-    child.setObserving({ _ = d }, receipt: rd)
-    child.setObserving({ _ = e }, receipt: re)
-    return child
-}
+public func zip<A, B, C, D, E>(_ a: Observable<A>, _ b: Observable<B>, _ c: Observable<C>, _ d: Observable<D>, _ e: Observable<E>) -> Observable<(A?, B?, C?, D?, E?)> { Zip5Observable(a, b, c, d, e) }
