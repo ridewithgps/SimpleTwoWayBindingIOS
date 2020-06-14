@@ -30,6 +30,17 @@ class SimpleTwoWayBindingTests: XCTestCase {
         o.unbind(ro)
         o.value = "foobar"
     }
+    
+    func testBasicKeyPathBind() {
+        let o = Observable<String>()
+        class X {
+            var str: String = "foo"
+        }
+        var x = X()
+        o.bind(&x, \.str)
+        o.value = "bar"
+        XCTAssertEqual(x.str, "bar")
+    }
 
     func testMap() {
         let o = Observable<String>()
@@ -261,11 +272,10 @@ class SimpleTwoWayBindingTests: XCTestCase {
         
         var bindFired = false
         var expectation: String?
-        let bindingFunction: (String) -> Void = {
+        uo.bind {
             bindFired = true
             XCTAssertEqual($0, expectation)
         }
-        _ = uo.bind(bindingFunction)
         
         expectation = "foo"
         o.value = "foo"
@@ -474,16 +484,33 @@ class SimpleTwoWayBindingTests: XCTestCase {
         XCTAssertEqual(b.value, "foo", "B should not have gotten a new value")
     }
     
-    func testBindUI() {
+    func testDispatchedBind() {
         let a = Observable("A")
-        
-        let bindFired = expectation(description: "UI Binding fired")
-        a.bindUI(replay: false) { s in
-            XCTAssertEqual(s, "b")
-            bindFired.fulfill()
-        }
+        let q = DispatchQueue.global(qos: .utility)
+        var bindFired: XCTestExpectation? = expectation(description: "UI Binding fired")
+        a
+            .bind(replay: false, on: q) { s in
+                XCTAssertEqual(s, "b")
+                bindFired?.fulfill()
+            }
         
         a.value = "b"
-        wait(for: [bindFired], timeout: 1)
+        wait(for: [bindFired!], timeout: 3)
+    }
+    
+    func testSimplePipeline() {
+        let a = Observable("A")
+        var bindFired: XCTestExpectation? = expectation(description: "UI Binding fired")
+        let o = a
+            .map { $0 + "\($0.count)"}
+            .map { $0 + "foo" }
+        o
+            .bind(replay: false) { s in
+                XCTAssertEqual(s, "b1foo")
+                bindFired?.fulfill()
+            }
+        
+        a.value = "b"
+        wait(for: [bindFired!], timeout: 3)
     }
 }

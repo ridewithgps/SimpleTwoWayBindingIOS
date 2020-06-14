@@ -19,10 +19,12 @@ class SimpleTwoWayBindingReceiptBagTests: XCTestCase {
         var pBindingFired = false
         
         o
-            .pausableBind(replay: false) { _ in oBindingFired = true }
+            .pausable
+            .bind(replay: false) { _ in oBindingFired = true }
             .add(to: bag)
         p
-            .pausableBind(replay: false) { _ in pBindingFired = true }
+            .pausable
+            .bind(replay: false) { _ in pBindingFired = true }
             .add(to: bag)
         
         o.value = 2
@@ -57,7 +59,8 @@ class SimpleTwoWayBindingReceiptBagTests: XCTestCase {
         var oBindingFired = false
         
         o
-            .pausableBind(replay: false) { _ in oBindingFired = true }
+            .pausable
+            .bind(replay: false) { _ in oBindingFired = true }
             .add(to: bag)
         
         NotificationCenter.default.post(name: UIApplication.didEnterBackgroundNotification, object: nil)
