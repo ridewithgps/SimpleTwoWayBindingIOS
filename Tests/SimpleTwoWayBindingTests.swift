@@ -474,16 +474,36 @@ class SimpleTwoWayBindingTests: XCTestCase {
         XCTAssertEqual(b.value, "foo", "B should not have gotten a new value")
     }
     
-    func testBindUI() {
+    func testBindOnQueue() {
         let a = Observable("A")
         
-        let bindFired = expectation(description: "UI Binding fired")
-        a.bindUI(replay: false) { s in
+        let bindFired = expectation(description: "Queue binding fired")
+        a.bind(replay: false, on: DispatchQueue.global(qos: .background)) { s in
             XCTAssertEqual(s, "b")
             bindFired.fulfill()
         }
         
         a.value = "b"
         wait(for: [bindFired], timeout: 1)
+    }
+    
+    func testBindOnMainSpecialCase() {
+        let a = Observable("A")
+        
+        var immediate: String = "not b"
+        let bindFired = expectation(description: "Main binding fired")
+        a.bind(replay: false, on: .main) { s in
+            immediate = s
+            bindFired.fulfill()
+        }
+        
+        let asyncMainFinished = expectation(description: "Finished our async main call")
+        DispatchQueue.main.async {
+            a.value = "b"
+            XCTAssertEqual(immediate, "b", "Value should have been set synchronously")
+            asyncMainFinished.fulfill()
+        }
+        
+        wait(for: [bindFired, asyncMainFinished], timeout: 1)
     }
 }

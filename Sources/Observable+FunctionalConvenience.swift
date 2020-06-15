@@ -9,52 +9,47 @@
 import Foundation
 
 public extension Observable {
-    /// Bind to this observable with a simple value function, optionally replaying the existing value into the stream immediately
+
+/// Bind to this observable with a simple value function, optionally replaying the existing value into the stream immediately
     ///
     /// This is a nice alternative to the standard `bind((Observable<ObservedType>, ObservedType)->Void)`, since we're 99% of the time uninterested in getting a reference to the Observable itself.
     /// - Parameters:
     ///   - replay: If there's a value in this observable, after setting up the binding immediately fire the observation function with that value, rather than the default behavior of waiting for a new value to come into the stream. Defaults to true.
+    ///   - queue: (Optional) Queue to run the binding function on when it fires; nil runs on whatever queue the value was set from. Defaults to nil.
     ///   - f: an observation function
     @discardableResult
-    func bind(replay: Bool = true, _ f: @escaping (ObservedType) -> Void) -> BindingReceipt {
-        let r = bind { _, value in f(value) }
+    func bind(replay: Bool = true, on queue: DispatchQueue? = nil, _ f: @escaping (ObservedType) -> Void) -> BindingReceipt {
+        let wrappedF: (ObservedType) -> Void = { value in
+            if let queue = queue {
+                if queue == DispatchQueue.main, Thread.isMainThread {
+                    f(value)
+                } else {
+                    queue.async {
+                        f(value)
+                    }
+                }
+            } else {
+                f(value)
+            }
+        }
+        let r = bind { _, value in
+            wrappedF(value)
+        }
         if replay, let value = value {
-            f(value)
+            wrappedF(value)
         }
         return r
     }
     
-    func pausableBind(replay: Bool = true, _ f: @escaping (ObservedType) -> Void) -> PausableReceipt {
-        PausableReceipt(
-            receipt: bind(replay: replay, f),
-            unbind: unbind,
-            pauseObservations: pauseObservations,
-            unpauseObservations: unpauseObservations
-        )
-    }
-    
+    /// Bind to this observable with an object/keypath pair
+    /// - Parameters:
+    ///   - replay: If there's a value in this observable, after setting up the binding immediately fire the observation function with that value, rather than the default behavior of waiting for a new value to come into the stream. Defaults to true.
+    ///   - queue: (Optional) Queue to run the binding function on when it fires; nil runs on whatever queue the value was set from. Defaults to nil.
+    ///   - target: object to use writeable keypath on
+    ///   - path: a writeable keypath to a property of the target to set
     @discardableResult
-    func bindUI(replay: Bool = true, _ f: @escaping (ObservedType) -> Void) -> BindingReceipt {
-        let r: BindingReceipt = bind { _, value in
-            DispatchQueue.main.async {
-                f(value)
-            }
-        }
-        if replay, let value = value {
-            DispatchQueue.main.async {
-                f(value)
-            }
-        }
-        return r
-    }
-    
-    func pausableBindUI(replay: Bool = true, _ f: @escaping (ObservedType) -> Void) -> PausableReceipt {
-        PausableReceipt(
-            receipt: bindUI(replay: replay, f),
-            unbind: unbind,
-            pauseObservations: pauseObservations,
-            unpauseObservations: unpauseObservations
-        )
+    func bind<Root: AnyObject>(replay: Bool = true, on queue: DispatchQueue? = nil, _ target: inout Root, _ path: WritableKeyPath<Root, ObservedType>) -> BindingReceipt {
+        bind(replay: replay, on: queue) { [weak target] value in target?[keyPath: path] = value }
     }
     
     /// Create a new observable whose value is mapped from this observable's values

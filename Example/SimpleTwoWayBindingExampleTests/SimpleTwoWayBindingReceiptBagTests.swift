@@ -11,7 +11,7 @@ import XCTest
 
 class SimpleTwoWayBindingReceiptBagTests: XCTestCase {
     func testPauseUnpause() {
-        let bag = ReceiptBag()
+        let bag = ReceiptBag(handleBackgroundNotifications: false)
         let o: Observable<Int> = Observable(1)
         let p: Observable<Bool> = Observable(false)
         
@@ -42,6 +42,13 @@ class SimpleTwoWayBindingReceiptBagTests: XCTestCase {
         XCTAssertFalse(pBindingFired)
 
         bag.unpause()
+        
+        // Bags always replay the last values into the bindings after an unpause
+        XCTAssert(oBindingFired)
+        XCTAssert(pBindingFired)
+
+        oBindingFired = false
+        pBindingFired = false
         
         o.value = 4
         p.value = true
