@@ -78,4 +78,25 @@ class SimpleTwoWayBindingReceiptBagTests: XCTestCase {
         XCTAssert(oBindingFired)
         
     }
+    
+    func alwaysFails_testPauseDoesntDoubleNotify() {
+        let bag = ReceiptBag()
+        let o: Observable<Int> = Observable(1)
+        
+        var binding1FireCount = 0
+        var binding2FireCount = 0
+        
+        o
+            .pausableBind(replay: false) { _ in binding1FireCount += 1 }
+            .add(to: bag)
+        o
+            .pausableBind(replay: false) { _ in binding2FireCount += 1 }
+            .add(to: bag)
+        
+        bag.pause()
+        o.value = 42
+        bag.unpause()
+        XCTAssertEqual(binding1FireCount, 1)
+        XCTAssertEqual(binding2FireCount, 1)
+    }
 }

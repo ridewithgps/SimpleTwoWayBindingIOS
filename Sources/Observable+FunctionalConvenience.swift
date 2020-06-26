@@ -153,11 +153,7 @@ private class Zip2Observable<A, B>: Observable<(A?, B?)> {
         }
         setObserving({ _ = a }, receipt: ra)
         setObserving({ _ = b }, receipt: rb)
-        if let v = a.value {
-            a.value = v
-        } else if let v = b.value {
-            b.value = v
-        }
+        value = (a.value, b.value)
     }
 }
 
@@ -182,13 +178,7 @@ private class Zip3Observable<A, B, C>: Observable<(A?, B?, C?)> {
         }
         setObserving({ _ = ab }, receipt: rab)
         setObserving({ _ = b }, receipt: rc)
-        if let v = a.value {
-            a.value = v
-        } else if let v = b.value {
-            b.value = v
-        } else if let v = c.value {
-            c.value = v
-        }
+        value = (a.value, b.value, c.value)
     }
 }
 
@@ -212,15 +202,7 @@ private class Zip4Observable<A, B, C, D>: Observable<(A?, B?, C?, D?)> {
         }
         setObserving({ _ = abc }, receipt: rabc)
         setObserving({ _ = d }, receipt: rd)
-        if let v = a.value {
-            a.value = v
-        } else if let v = b.value {
-            b.value = v
-        } else if let v = c.value {
-            c.value = v
-        } else if let v = d.value {
-            d.value = v
-        }
+        value = (a.value, b.value, c.value, d.value)
     }
 }
 
@@ -244,17 +226,7 @@ private class Zip5Observable<A, B, C, D, E>: Observable<(A?, B?, C?, D?, E?)> {
         }
         setObserving({ _ = abcd }, receipt: rabcd)
         setObserving({ _ = e }, receipt: re)
-        if let v = a.value {
-            a.value = v
-        } else if let v = b.value {
-            b.value = v
-        } else if let v = c.value {
-            c.value = v
-        } else if let v = d.value {
-            d.value = v
-        } else if let v = e.value {
-            e.value = v
-        }
+        value = (a.value, b.value, c.value, d.value, e.value)
     }
 }
 
