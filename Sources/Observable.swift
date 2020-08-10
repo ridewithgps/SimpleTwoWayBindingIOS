@@ -24,13 +24,16 @@ public class Observable<ObservedType> {
     
     internal var paused: Bool = false
     
-    public var value: ObservedType? {
-        didSet {
-            if let value = value {
-                notifyObservers(value)
-            }
-        }
-    }
+   public var value: ObservedType? {
+       didSet { fire() }
+   }
+   
+   /// Notify all observers with the current value if non-nil.
+   public func fire() {
+       if let value = value {
+           notifyObservers(value)
+       }
+   }
     
     public init(_ value: ObservedType? = nil) {
         self.value = value
