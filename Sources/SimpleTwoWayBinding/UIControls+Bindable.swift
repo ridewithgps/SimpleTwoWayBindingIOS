@@ -5,7 +5,7 @@
 //  Created by Manish Katoch on 11/26/17.
 //
 
-import Foundation
+import UIKit
 
 extension UITextField : Bindable {
     public typealias BindingType = String

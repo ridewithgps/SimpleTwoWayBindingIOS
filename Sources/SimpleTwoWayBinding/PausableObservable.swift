@@ -5,7 +5,7 @@
 //  Created by Ryan Forsythe on 6/15/20.
 //
 
-import Foundation
+import UIKit
 
 /// A helper class to manage pausable receipts
 public class ReceiptBag {
