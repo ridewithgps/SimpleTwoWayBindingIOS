@@ -10,10 +10,30 @@ import UIKit
 
 public protocol ObservableThing { }
 
-public struct BindingReceipt: Hashable, Identifiable {
+public typealias ReceiptDisposer = [BindingReceipt]
+
+extension ReceiptDisposer {
+    public func dispose() {
+        forEach { disposable in
+            disposable.dispose()
+        }
+    }
+}
+
+public final class BindingReceipt: Hashable, Identifiable {
     public let id = UUID()
     public func hash(into hasher: inout Hasher) { hasher.combine(id) }
     public static func == (lhs: BindingReceipt, rhs: BindingReceipt) -> Bool { lhs.id == rhs.id }
+
+    public var dispose: (() -> Void)!
+
+    deinit {
+        dispose()
+    }
+
+    public func add(to disposal: inout ReceiptDisposer) {
+        disposal.append(self)
+    }
 }
 
 public class Observable<ObservedType>: ObservableThing {
@@ -36,14 +56,24 @@ public class Observable<ObservedType>: ObservableThing {
             notifyObservers(value)
         }
     }
+
+    fileprivate var _onDispose: () -> Void
     
-    public init(_ value: ObservedType? = nil) {
+    public init(_ value: ObservedType? = nil, onDispose: @escaping () -> Void = {}) {
         self.value = value
+        self._onDispose = onDispose
     }
     
     @discardableResult
     public func bind(observer: @escaping Observer) -> BindingReceipt {
         let r = BindingReceipt()
+
+        r.dispose = { [weak self] in
+            self?.observers[r] = nil
+            self?.bindings[r] = nil
+            self?._onDispose()
+        }
+
         observers[r] = observer
         return r
     }

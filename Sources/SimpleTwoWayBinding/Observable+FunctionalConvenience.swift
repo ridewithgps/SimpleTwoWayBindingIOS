@@ -51,14 +51,6 @@ public extension Observable {
     func bind<Root: AnyObject>(replay: Bool = true, on queue: DispatchQueue? = nil, _ target: inout Root, _ path: WritableKeyPath<Root, ObservedType>) -> BindingReceipt {
         bind(replay: replay, on: queue) { [weak target] value in target?[keyPath: path] = value }
     }
-
-    typealias ObservableTrash = [ObservableThing]
-    /// Bind to this observable with an object/keypath pair
-    /// - Parameters:
-    ///   - bag: If there's a value in this observable, after setting up the binding immediately fire the observation function with that value, rather than the default behavior of waiting for a new value to come into the stream. Defaults to true.
-    func dispose(by bag: inout ObservableTrash) {
-        bag.append(self)
-    }
     
     /// Create a new observable whose value is mapped from this observable's values
     /// - Parameters:
