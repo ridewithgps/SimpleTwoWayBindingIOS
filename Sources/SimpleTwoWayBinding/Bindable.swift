@@ -57,8 +57,8 @@ extension Bindable where Self: NSObject {
     public func bind(with observable: Observable<BindingType>) -> BindingReceipt {
 
         if self is UIControl {
-            //let closure: (() -> Void)! =
-            let sleeve = ActionClosure{ [weak self] in
+            let sleeve = ActionClosure {
+                [weak self] in
                 self?.valueChanged()
             }
 
