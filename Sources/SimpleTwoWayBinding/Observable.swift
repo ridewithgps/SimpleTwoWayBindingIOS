@@ -8,13 +8,15 @@
 import Foundation
 import UIKit
 
+public protocol ObservableThing { }
+
 public struct BindingReceipt: Hashable, Identifiable {
     public let id = UUID()
     public func hash(into hasher: inout Hasher) { hasher.combine(id) }
     public static func == (lhs: BindingReceipt, rhs: BindingReceipt) -> Bool { lhs.id == rhs.id }
 }
 
-public class Observable<ObservedType> {
+public class Observable<ObservedType>: ObservableThing {
     public typealias Observer = (_ observable: Observable<ObservedType>, ObservedType) -> Void
     
     /// Map of receipt objects to the binding blocks those objects represent; see bind(observer:) and unbind(:)
