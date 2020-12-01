@@ -52,6 +52,17 @@ public extension Observable {
         bind(replay: replay, on: queue) { [weak target] value in target?[keyPath: path] = value }
     }
     
+    /// Bind to this observable with an object/keypath pair
+    /// - Parameters:
+    ///   - replay: If there's a value in this observable, after setting up the binding immediately fire the observation function with that value, rather than the default behavior of waiting for a new value to come into the stream. Defaults to true.
+    ///   - queue: (Optional) Queue to run the binding function on when it fires; nil runs on whatever queue the value was set from. Defaults to nil.
+    ///   - target: object to use writeable keypath on
+    ///   - path: a writeable keypath to a property of the target to set
+    @discardableResult
+    func bind<Root: AnyObject>(replay: Bool = true, on queue: DispatchQueue? = nil, _ target: inout Root, _ path: WritableKeyPath<Root, Optional<ObservedType>>) -> BindingReceipt {
+        bind(replay: replay, on: queue) { [weak target] value in target?[keyPath: path] = value }
+    }
+    
     /// Create a new observable whose value is mapped from this observable's values
     /// - Parameters:
     ///   - replay: If there's a value in this observable, after setting up the binding immediately fire the observation function with that value, rather than the default behavior of waiting for a new value to come into the stream. Defaults to true.
