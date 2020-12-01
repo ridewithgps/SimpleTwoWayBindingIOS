@@ -10,7 +10,7 @@ import Foundation
 
 public extension Observable {
 
-    /// Bind to this observable with a simple value function, optionally replaying the existing value into the stream immediately
+/// Bind to this observable with a simple value function, optionally replaying the existing value into the stream immediately
     ///
     /// This is a nice alternative to the standard `bind((Observable<ObservedType>, ObservedType)->Void)`, since we're 99% of the time uninterested in getting a reference to the Observable itself.
     /// - Parameters:
@@ -40,7 +40,7 @@ public extension Observable {
         }
         return r
     }
-
+    
     /// Bind to this observable with an object/keypath pair
     /// - Parameters:
     ///   - replay: If there's a value in this observable, after setting up the binding immediately fire the observation function with that value, rather than the default behavior of waiting for a new value to come into the stream. Defaults to true.
@@ -51,7 +51,18 @@ public extension Observable {
     func bind<Root: AnyObject>(replay: Bool = true, on queue: DispatchQueue? = nil, _ target: inout Root, _ path: WritableKeyPath<Root, ObservedType>) -> BindingReceipt {
         bind(replay: replay, on: queue) { [weak target] value in target?[keyPath: path] = value }
     }
-
+    
+    /// Bind to this observable with an object/keypath pair
+    /// - Parameters:
+    ///   - replay: If there's a value in this observable, after setting up the binding immediately fire the observation function with that value, rather than the default behavior of waiting for a new value to come into the stream. Defaults to true.
+    ///   - queue: (Optional) Queue to run the binding function on when it fires; nil runs on whatever queue the value was set from. Defaults to nil.
+    ///   - target: object to use writeable keypath on
+    ///   - path: a writeable keypath to a property of the target to set
+    @discardableResult
+    func bind<Root: AnyObject>(replay: Bool = true, on queue: DispatchQueue? = nil, _ target: inout Root, _ path: WritableKeyPath<Root, Optional<ObservedType>>) -> BindingReceipt {
+        bind(replay: replay, on: queue) { [weak target] value in target?[keyPath: path] = value }
+    }
+    
     /// Create a new observable whose value is mapped from this observable's values
     /// - Parameters:
     ///   - replay: If there's a value in this observable, after setting up the binding immediately fire the observation function with that value, rather than the default behavior of waiting for a new value to come into the stream. Defaults to true.
@@ -64,7 +75,7 @@ public extension Observable {
         child.setObserving({ _ = self }, receipt: r)
         return child
     }
-
+    
     /// Create a new observable of the same type as this observable, whose value is filtered before delivery
     /// - Parameters:
     ///   - replay: If there's a value in this observable, after setting up the binding immediately fire the observation function with that value, rather than the default behavior of waiting for a new value to come into the stream. Defaults to true.
@@ -79,7 +90,7 @@ public extension Observable {
         child.setObserving({ _ = self }, receipt: r)
         return child
     }
-
+    
     /// Create a new observable whose value is defined by integrating this observable's value with the new observable's value using the `reducer` function
     /// - Parameters:
     ///   - replay: If there's a value in this observable, after setting up the binding immediately fire the observation function with that value, rather than the default behavior of waiting for a new value to come into the stream. Defaults to true.
@@ -94,14 +105,14 @@ public extension Observable {
         child.setObserving({ _ = self }, receipt: r)
         return child
     }
-
+    
     func debug(_ message: String) -> Observable {
         map { value in
             print(message + " (Current value: \(value))")
             return value
         }
     }
-
+    
     /// Creates a new observable whose value is mapped from this observable's values, unless the mapping function returns nil
     /// - Parameters:
     ///   - replay: If there's a value in this observable, after setting up the binding immediately fire the observation function with that value, rather than the default behavior of waiting for a new value to come into the stream. Defaults to true.
@@ -139,11 +150,11 @@ let ObserverZipThread = DispatchQueue(label: "RWGPS.Observer.Zipping")
 private class Zip2Observable<A, B>: Observable<(A?, B?)> {
     weak var a: Observable<A>?
     weak var b: Observable<B>?
-
+    
     init(_ a: Observable<A>, _ b: Observable<B>) {
         self.a = a
         self.b = b
-
+        
         super.init()
         let ra = a.bind(replay: false) { [weak self] a in
             self?.value = (a, self?.b?.value)
@@ -163,12 +174,12 @@ public func zip<A, B>(_ a: Observable<A>, _ b: Observable<B>) -> Observable<(A?,
 private class Zip3Observable<A, B, C>: Observable<(A?, B?, C?)> {
     weak var ab: Zip2Observable<A, B>?
     weak var c: Observable<C>?
-
+    
     init(_ a: Observable<A>, _ b: Observable<B>, _ c: Observable<C>) {
         let ab = Zip2Observable(a, b)
         self.ab = ab
         self.c = c
-
+        
         super.init()
         let rab = ab.bind(replay: false) { [weak self] ab in
             self?.value = (ab.0, ab.1, self?.c?.value)
@@ -187,12 +198,12 @@ public func zip<A, B, C>(_ a: Observable<A>, _ b: Observable<B>, _ c: Observable
 private class Zip4Observable<A, B, C, D>: Observable<(A?, B?, C?, D?)> {
     weak var abc: Zip3Observable<A, B, C>?
     weak var d: Observable<D>?
-
+    
     init(_ a: Observable<A>, _ b: Observable<B>, _ c: Observable<C>, _ d: Observable<D>) {
         let abc = Zip3Observable(a, b, c)
         self.abc = abc
         self.d = d
-
+        
         super.init()
         let rabc = abc.bind(replay: false) { [weak self] abc in
             self?.value = (abc.0, abc.1, abc.2, self?.d?.value)
@@ -211,12 +222,12 @@ public func zip<A, B, C, D>(_ a: Observable<A>, _ b: Observable<B>, _ c: Observa
 private class Zip5Observable<A, B, C, D, E>: Observable<(A?, B?, C?, D?, E?)> {
     weak var abcd: Zip4Observable<A, B, C, D>?
     weak var e: Observable<E>?
-
+    
     init(_ a: Observable<A>, _ b: Observable<B>, _ c: Observable<C>, _ d: Observable<D>, _ e: Observable<E>) {
         let abcd = Zip4Observable(a, b, c, d)
         self.abcd = abcd
         self.e = e
-
+        
         super.init()
         let rabcd = abcd.bind(replay: false) { [weak self] abcd in
             self?.value = (abcd.0, abcd.1, abcd.2, abcd.3, self?.e?.value)

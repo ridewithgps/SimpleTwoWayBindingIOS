@@ -506,4 +506,24 @@ class SimpleTwoWayBindingTests: XCTestCase {
         
         wait(for: [bindFired, asyncMainFinished], timeout: 1)
     }
+    
+    func testKeypathBinding() {
+        class Foo {
+            var bar: Int
+            var qux: Int?
+            
+            init(_ i: Int) {
+                bar = i
+            }
+        }
+        
+        var f = Foo(0)
+        
+        let a: Observable<Int> = Observable()
+        
+        a.bind(&f, \.bar)
+        a.bind(&f, \.qux)
+        a.value = 1
+        XCTAssertEqual(f.bar, f.qux ?? Int.min)
+    }
 }
