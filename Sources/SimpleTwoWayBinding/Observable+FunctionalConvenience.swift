@@ -242,3 +242,51 @@ private class Zip5Observable<A, B, C, D, E>: Observable<(A?, B?, C?, D?, E?)> {
 }
 
 public func zip<A, B, C, D, E>(_ a: Observable<A>, _ b: Observable<B>, _ c: Observable<C>, _ d: Observable<D>, _ e: Observable<E>) -> Observable<(A?, B?, C?, D?, E?)> { Zip5Observable(a, b, c, d, e) }
+
+private class Zip6Observable<A, B, C, D, E, F>: Observable<(A?, B?, C?, D?, E?, F?)> {
+    weak var abcde: Zip5Observable<A, B, C, D, E>?
+    weak var f: Observable<F>?
+    
+    init(_ a: Observable<A>, _ b: Observable<B>, _ c: Observable<C>, _ d: Observable<D>, _ e: Observable<E>, _ f: Observable<F>) {
+        let abcde = Zip5Observable(a, b, c, d, e)
+        self.abcde = abcde
+        self.f = f
+        
+        super.init()
+        let rabcde = abcde.bind(replay: false) { [weak self] abcde in
+            self?.value = (abcde.0, abcde.1, abcde.2, abcde.3, abcde.4, self?.f?.value)
+        }
+        let rf = f.bind(replay: false) { [weak self] f in
+            self?.value = (self?.abcde?.value?.0, self?.abcde?.value?.1, self?.abcde?.value?.2, self?.abcde?.value?.3, self?.abcde?.value?.4, f)
+        }
+        setObserving({ _ = abcde }, receipt: rabcde)
+        setObserving({ _ = f }, receipt: rf)
+        value = (a.value, b.value, c.value, d.value, e.value, f.value)
+    }
+}
+
+public func zip<A, B, C, D, E, F>(_ a: Observable<A>, _ b: Observable<B>, _ c: Observable<C>, _ d: Observable<D>, _ e: Observable<E>, _ f: Observable<F>) -> Observable<(A?, B?, C?, D?, E?, F?)> { Zip6Observable(a, b, c, d, e, f) }
+
+private class Zip7Observable<A, B, C, D, E, F, G>: Observable<(A?, B?, C?, D?, E?, F?, G?)> {
+    weak var abcdef: Zip6Observable<A, B, C, D, E, F>?
+    weak var g: Observable<G>?
+    
+    init(_ a: Observable<A>, _ b: Observable<B>, _ c: Observable<C>, _ d: Observable<D>, _ e: Observable<E>, _ f: Observable<F>, _ g: Observable<G>) {
+        let abcdef = Zip6Observable(a, b, c, d, e, f)
+        self.abcdef = abcdef
+        self.g = g
+        
+        super.init()
+        let rabcdef = abcdef.bind(replay: false) { [weak self] abcdef in
+            self?.value = (abcdef.0, abcdef.1, abcdef.2, abcdef.3, abcdef.4, abcdef.5, self?.g?.value)
+        }
+        let rg = g.bind(replay: false) { [weak self] g in
+            self?.value = (self?.abcdef?.value?.0, self?.abcdef?.value?.1, self?.abcdef?.value?.2, self?.abcdef?.value?.3, self?.abcdef?.value?.4, self?.abcdef?.value?.5, g)
+        }
+        setObserving({ _ = abcdef }, receipt: rabcdef)
+        setObserving({ _ = g }, receipt: rg)
+        value = (a.value, b.value, c.value, d.value, e.value, f.value, g.value)
+    }
+}
+
+public func zip<A, B, C, D, E, F, G>(_ a: Observable<A>, _ b: Observable<B>, _ c: Observable<C>, _ d: Observable<D>, _ e: Observable<E>, _ f: Observable<F>, _ g: Observable<G>) -> Observable<(A?, B?, C?, D?, E?, F?, G?)> { Zip7Observable(a, b, c, d, e, f, g) }
