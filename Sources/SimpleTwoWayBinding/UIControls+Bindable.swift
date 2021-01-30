@@ -7,7 +7,7 @@
 
 import UIKit
 
-extension UITextField : Bindable {
+extension UITextField: Bindable {
     public typealias BindingType = String
     
     public func observingValue() -> String? {
@@ -21,7 +21,7 @@ extension UITextField : Bindable {
     }
 }
 
-extension UISwitch : Bindable {
+extension UISwitch: Bindable {
     public typealias BindingType = Bool
     
     public func observingValue() -> Bool? {
@@ -33,7 +33,7 @@ extension UISwitch : Bindable {
     }
 }
 
-extension UISlider : Bindable {
+extension UISlider: Bindable {
     public typealias BindingType = Float
     
     public func observingValue() -> Float? {
@@ -45,7 +45,7 @@ extension UISlider : Bindable {
     }
 }
 
-extension UIStepper : Bindable {
+extension UIStepper: Bindable {
     public typealias BindingType = Double
     
     public func observingValue() -> Double? {
@@ -57,7 +57,7 @@ extension UIStepper : Bindable {
     }
 }
 
-extension UISegmentedControl : Bindable {
+extension UISegmentedControl: Bindable {
     public typealias BindingType = Int
     
     public func observingValue() -> Int? {
@@ -67,21 +67,6 @@ extension UISegmentedControl : Bindable {
     public func updateValue(with value: Int) {
         self.selectedSegmentIndex = value
     }
-    
-    public func bind(replay: Bool = false, with observable: Observable<Int>) -> BindingReceipt {
-        self.register(for: observable)
-        let r = self.observe(for: observable) { [weak self] (value) in
-            self?.updateValue(with: value)
-        }
-        if let s = observable.value {
-            DispatchQueue.main.async { [weak self] in
-                self?.updateValue(with: s)
-            }
-            
-        }
-        return r
-    }
-    
 }
 
 public class BindableTextView: UITextView, Bindable, UITextViewDelegate {
