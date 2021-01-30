@@ -67,6 +67,21 @@ extension UISegmentedControl : Bindable {
     public func updateValue(with value: Int) {
         self.selectedSegmentIndex = value
     }
+    
+    public func bind(replay: Bool = false, with observable: Observable<Int>) -> BindingReceipt {
+        self.register(for: observable)
+        let r = self.observe(for: observable) { [weak self] (value) in
+            self?.updateValue(with: value)
+        }
+        if let s = observable.value {
+            DispatchQueue.main.async { [weak self] in
+                self?.updateValue(with: s)
+            }
+            
+        }
+        return r
+    }
+    
 }
 
 public class BindableTextView: UITextView, Bindable, UITextViewDelegate {

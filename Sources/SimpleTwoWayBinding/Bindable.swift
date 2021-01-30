@@ -55,16 +55,19 @@ extension Bindable where Self: NSObject {
 
     @discardableResult
     public func bind(with observable: Observable<BindingType>) -> BindingReceipt {
+        
+        if let control = self as? UIControl {
 
-        if self is UIControl {
-            let sleeve = ActionClosure {
-                [weak self] in
+            let memoryAddress = String(format: "%p", unsafeBitCast(self, to: UInt.self))
+            let sleeve = ActionClosure { [weak self] in
                 self?.valueChanged()
             }
-
-            (self as! UIControl).addTarget(sleeve, action: #selector(ActionClosure.invoke), for: [.valueChanged, .editingChanged])
-
-            objc_setAssociatedObject(self, memoryAddress, sleeve, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+            
+            control.addTarget(sleeve,
+                              action: #selector(ActionClosure.invoke),
+                              for: [.valueChanged, .editingChanged])
+            
+            objc_setAssociatedObject(control, memoryAddress, sleeve, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
         }
 
         self.binder = observable
@@ -75,17 +78,14 @@ extension Bindable where Self: NSObject {
         return self.observe(for: observable) { (value) in
             self.updateValue(with: value)
         }
-    }    
+    }
 }
 
 
-extension NSObject {
-    fileprivate var memoryAddress: String {
-        String(format: "%p", unsafeBitCast(self, to: UInt.self))
-    }
+private extension NSObject {
 
-    @objc fileprivate final class ActionClosure: NSObject {
-        let closure: () -> Void
+    @objc final class ActionClosure: NSObject {
+        private let closure: () -> Void
 
         init(_ closure: @escaping () -> Void) {
             self.closure = closure
